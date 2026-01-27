@@ -1,0 +1,55 @@
+#pragma once
+#include "math.h"
+#include <vector>
+#include <string>
+#include "glad/glad.h"
+
+enum class Suit {
+    Spades,
+    Hearts,
+    Diamond,
+    Clubs
+};
+
+struct Card {
+    int rank;
+    Suit suit;
+    bool faceUp;
+
+    Vec2 position;
+    Vec2 size;
+
+    float scale;
+    float cornerRadius;
+
+    bool isDragging;
+    float dragOffsetX;
+    float dragOffsetY;
+
+    int pileIndex;
+    int indexInPile;
+
+    GLuint textureID;
+};
+
+enum struct PileType {
+    Tableau,
+    Stock,
+    Completed
+};
+
+struct Pile {
+    PileType type;
+    Vec2 basePosition;
+    std::vector<int> cardIndices;
+};
+
+bool canDeal(const std::vector<Pile>& piles, int stockPile, int firstTableau, int tableauCount);
+void restock(std::vector<Card>& cards, std::vector<Pile>& piles, const int stockPile, const int firstTableau, const int tableauCount);
+bool pointInCard(const Vec2& mouse, const Card& card);
+bool pointInPile(const Vec2& mouse, const Pile& pile, const Vec2& cardSize);
+void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& piles);
+inline const char* suitToString(const Suit suit);
+
+std::string getCardTexture(Suit suit, int rank);
+std::vector<Card> generateDeck(int suitCount);
