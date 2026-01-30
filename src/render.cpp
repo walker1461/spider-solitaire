@@ -36,7 +36,7 @@ GLuint loadTexture(const char* path) {
 
         stbi_image_free(data);
     } else {
-        std::cout << "Failed to load texture: " << path << "\n";
+        //std::cout << "Failed to load texture: " << path << "\n";
         stbi_image_free(data);
     }
     return textureID;
@@ -70,13 +70,19 @@ unsigned int createShaderProgram() {
         uniform vec2 offset;
         uniform vec2 uSize;
         uniform float uScale;
+        uniform vec2 uAspect;
 
         out vec2 TexCoords;
         out vec2 localPos;
 
         void main() {
             localPos = aPos.xy * uSize * uScale;
-            gl_Position = vec4(localPos + offset, aPos.z, 1.0);
+
+            vec2 aspectPos = localPos;
+            float aspect = uAspect.x / uAspect.y;
+            aspectPos.x /= aspect;
+
+            gl_Position = vec4(aspectPos + offset, aPos.z, 1.0);
             TexCoords = aTexCoord;
         }
     )";
@@ -104,6 +110,7 @@ unsigned int createShaderProgram() {
             if (dist > r) {
                 discard;
             }
+
             FragColor = texture(cardTexture, TexCoords);
         }
     )";
@@ -130,11 +137,11 @@ unsigned int createShaderProgram() {
 };
 
 void renderCard(const Card& card, const unsigned int shaderProgram, const unsigned int VAO, const unsigned int cardBack) {
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
+    //glUseProgram(shaderProgram);
+    //glBindVertexArray(VAO);
 
     glUniform2f(glGetUniformLocation(shaderProgram, "offset"),
-                card.position.x, card.position.y);
+                card.visualPosition.x, card.visualPosition.y);
 
     glUniform2f(glGetUniformLocation(shaderProgram, "uSize"),
                 card.size.x, card.size.y);

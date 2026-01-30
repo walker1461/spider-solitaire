@@ -14,30 +14,61 @@ bool canDeal(const std::vector<Pile>& piles, const int stockPile, const int firs
     return true;
 }
 
-void restock(std::vector<Card>& cards, std::vector<Pile>& piles, const int stockPile, const int firstTableau, const int tableauCount) {
-    for (int i = 0; i < tableauCount; i++) {
-        Pile& stock = piles[stockPile];
-        Pile& tableau = piles[firstTableau + i];
+void restock(std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock) {
+    if (stock.cardIndices.empty()) return;
+    constexpr int NUM_TABLEAU = 10;
 
+    for (int i = 0; i < NUM_TABLEAU; i++) {
+        if (stock.cardIndices.empty()) return;
         int cardIndex = stock.cardIndices.back();
         stock.cardIndices.pop_back();
 
         Card& card = cards[cardIndex];
+        card.pileIndex = i;
+        card.indexInPile = piles[i].cardIndices.size();
         card.faceUp = true;
-        card.pileIndex = firstTableau + i;
-
-        tableau.cardIndices.push_back(cardIndex);
+        card.visualPosition = piles[i].basePosition;
+        piles[i].cardIndices.push_back(cardIndex);
     }
+}
+
+void startDealing(DealState& deal) {
+    deal.active = true;
+    deal.timer = 0.0f;
+    deal.nextPile = 0;
+}
+
+void updateDealing(DealState& deal, const float deltaTime, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock) {
+    if (!deal.active) return;
+    deal.timer += deltaTime;
+    if (deal.timer < deal.delay) return;
+    deal.timer = 0.0f;
+    if (stock.cardIndices.empty() || deal.nextPile >= 10) {
+        deal.active = false;
+        return;
+    }
+    const int cardIndex = stock.cardIndices.back();
+    stock.cardIndices.pop_back();
+    Card& card = cards[cardIndex];
+    card.faceUp = true;
+    card.pileIndex = deal.nextPile;
+    card.indexInPile = piles[deal.nextPile].cardIndices.size();
+
+    card.visualPosition = stock.basePosition;
+    card.targetPosition = piles[deal.nextPile].basePosition;
+
+    piles[deal.nextPile].cardIndices.push_back(cardIndex);
+    deal.nextPile++;
 }
 
 bool pointInCard(const Vec2 &mouse, const Card &card) {
     const float halfWidth = card.size.x * card.scale * 0.5f;
     const float halfHeight = card.size.y * card.scale * 0.5f;
 
-    return mouse.x >= card.position.x - halfWidth &&
-           mouse.x <= card.position.x + halfWidth &&
-           mouse.y >= card.position.y - halfHeight &&
-           mouse.y <= card.position.y + halfHeight;
+    return mouse.x >= card.targetPosition.x - halfWidth &&
+           mouse.x <= card.targetPosition.x + halfWidth &&
+           mouse.y >= card.targetPosition.y - halfHeight &&
+           mouse.y <= card.targetPosition.y + halfHeight;
 };
 
 bool pointInPile(const Vec2& mouse, const Pile& pile, const Vec2& cardSize) {
@@ -51,21 +82,28 @@ bool pointInPile(const Vec2& mouse, const Pile& pile, const Vec2& cardSize) {
 }
 
 void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& piles) {
+    float maxHeight = 1.8f;
+    float baseSpacing = 0.07f;
+    float spacing = baseSpacing;
+
     for (const auto &pile : piles) {
-        if (pile.type != PileType::Stock) {
+        if (pile.cardIndices.size() * spacing > maxHeight) {
+            spacing = maxHeight / pile.cardIndices.size();
+        }
+        if (pile.type != PileType::Stock && pile.type != PileType::Completed) {
             for (int i = 0; i < pile.cardIndices.size(); i++) {
                 Card& card = cards[pile.cardIndices[i]];
                 if (card.isDragging) {
                     continue;
                 }
-                card.position.x = pile.basePosition.x;
-                card.position.y = pile.basePosition.y - i * 0.07f;
+                card.targetPosition.x = pile.basePosition.x;
+                card.targetPosition.y = pile.basePosition.y - i * 0.07f;
                 card.indexInPile = i;
             }
         } else {
             for (int i = 0; i < pile.cardIndices.size(); i++) {
                 Card& card = cards[pile.cardIndices[i]];
-                card.position = pile.basePosition;
+                card.targetPosition = pile.basePosition;
                 card.indexInPile = i;
             }
         }
@@ -82,7 +120,7 @@ inline const char* suitToString(const Suit suit) {
     return "";
 }
 
-std::string getCardTexture(Suit suit, int rank) {
+std::string getCardTexture(const Suit suit, const int rank) {
     return "textures/" +
            std::string(suitToString(suit)) +
            " " +
@@ -130,4 +168,3 @@ std::vector<Card> generateDeck(int suitCount) {
     }
     return deck;
 }
-
