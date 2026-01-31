@@ -1,20 +1,21 @@
 #pragma once
 #include <vector>
-#include "card.h"
-#include "vectors.h"
+#include "../model/card.h"
+#include "../model/dealState.h"
+#include "../math/vectors.h"
+#include "../model/pile.h"
 
-bool isValidRun(const std::vector<Card>& cards, const Pile& pile, int startIndex);
-bool canDropRun(const std::vector<Card>& cards, const Pile& destination, int movingCardIndex);
+Vec2 screenToWorld(double x, double y, int w, int h);
 void moveRun(std::vector<Card>& cards, std::vector<Pile>& piles, int fromPile, int toPile, int startIndex);
 
-enum class InputState {
+enum class DragState {
     Idle,
     Dragging
 };
 
 class DragController {
     public:
-        InputState state = InputState::Idle;
+        DragState state = DragState::Idle;
 
         std::vector<int> draggingRun;
         int draggingPile = -1;
@@ -26,7 +27,7 @@ class DragController {
                     std::vector<Pile>& piles, Pile& stock, DealState& dealState);
     private:
         void updateIdle(const Vec2& mousePos, bool justPressed, std::vector<Card>& cards,
-                    std::vector<Pile>& piles, Pile& stock, DealState& dealState);
+                    std::vector<Pile>& piles, const Pile& stock, DealState& dealState);
 
         void updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased,
                     std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);

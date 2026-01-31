@@ -1,25 +1,19 @@
 #include "card_drag.h"
+#include "../core/game_rules.h"
 #include <algorithm>
 #include <vector>
-#include "card.h"
+#include "../model/card.h"
+#include "../core/layout.h"
 
-bool isValidRun(const std::vector<Card>& cards, const Pile& pile, const int startIndex) {
-    const auto& indices = pile.cardIndices;
-
-    for (int i = startIndex; i < indices.size() - 1; i++) {
-        const Card& a = cards[indices[i]];
-        const Card& b = cards[indices[i + 1]];
-
-        if (!a.faceUp || !b.faceUp) return false;
-        if (a.suit != b.suit) return false;
-        if (a.rank != b.rank + 1) return false;
-    }
-    return true;
+Vec2 screenToWorld(const double x, const double y, const int w, const int h) {
+    const auto ndcX = static_cast<float>(2.0 * x / w - 1.0);
+    const auto ndcY = static_cast<float>(1.0 - 2.0 * y / h);
+    return {ndcX, ndcY};
 }
 
 bool isCompleteRun(const std::vector<Card>& cards, const Pile& pile) {
     if (pile.cardIndices.size() < 13) return false;
-    const int start = pile.cardIndices.size() - 13;
+    const int start = static_cast<int>(pile.cardIndices.size() - 13);
 
     for (int i = start; i < pile.cardIndices.size() - 1; i++) {
         const Card& a = cards[pile.cardIndices[i]];
@@ -30,14 +24,6 @@ bool isCompleteRun(const std::vector<Card>& cards, const Pile& pile) {
         if (a.rank != b.rank + 1) return false;
     }
     return true;
-}
-
-bool canDropRun(const std::vector<Card>& cards, const Pile& destination, const int movingCardIndex) {
-    if (destination.type == PileType::Completed || destination.type == PileType::Stock) return false;
-    if (destination.cardIndices.empty()) return true;
-    const Card& top = cards[destination.cardIndices.back()];
-    const Card& moving = cards[movingCardIndex];
-    return top.rank == moving.rank + 1;
 }
 
 void autoComplete(std::vector<Card>& cards, std::vector<Pile>& piles, const int fromPile, const std::vector<int> &draggingRun, const int draggingStartIndex) {
@@ -90,18 +76,19 @@ void moveRun(std::vector<Card>& cards, std::vector<Pile>& piles, const int fromP
 
     if (isCompleteRun(cards, destination)) {
         std::vector<int> completeRun;
-        for (int i = destination.cardIndices.size() -13; i < destination.cardIndices.size(); i++) {
+        for (int i = static_cast<int>(destination.cardIndices.size() -13); i < destination.cardIndices.size(); i++) {
             completeRun.push_back(destination.cardIndices[i]);
         }
-        autoComplete(cards, piles, toPile, completeRun, destination.cardIndices.size() - 13);
+        autoComplete(cards, piles, toPile, completeRun, static_cast<int>(destination.cardIndices.size() - 13));
     }
 }
 
-void DragController::updateIdle(const Vec2 &mousePos, bool justPressed, std::vector<Card> &cards, std::vector<Pile> &piles, Pile& stock, DealState& deal) {
+void DragController::updateIdle(const Vec2 &mousePos, const bool justPressed, std::vector<Card> &cards, std::vector<Pile> &piles, const Pile& stock, DealState& dealState) {
     if (!justPressed) return;
-    if (pointInPile(mousePos, stock, {0.18f, 0.3f}) && canDeal(piles, 10, 0, 10)) {
-        //restock(cards, piles, stock);
-        startDealing(deal);
+    if (pointInPile(mousePos, stock, {0.22f, 0.3f}) && canDeal(piles, 10, 0, 10)) {
+        dealState.active = true;
+        dealState.nextPile = 0;
+        dealState.timer = 0.0f;
         return;
     }
 
@@ -112,7 +99,7 @@ void DragController::updateIdle(const Vec2 &mousePos, bool justPressed, std::vec
     for (int p = 0; p < piles.size() - 8; p++) {
         Pile& pile = piles[p];
 
-        for (int i = pile.cardIndices.size() - 1; i >= 0; i--) {
+        for (int i = static_cast<int>(pile.cardIndices.size() - 1); i >= 0; i--) {
             const int cardIndex = pile.cardIndices[i];
             Card& card = cards[cardIndex];
             if (!card.faceUp) break;
@@ -130,7 +117,7 @@ void DragController::updateIdle(const Vec2 &mousePos, bool justPressed, std::vec
             }
 
             dragOffset = mousePos - card.visualPosition;
-            state = InputState::Dragging;
+            state = DragState::Dragging;
             return;
         }
     }
@@ -142,12 +129,11 @@ void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, 
         for (int i = 0; i < draggingRun.size(); i++) {
             constexpr float spacing = 0.07f;
             Card& card = cards[draggingRun[i]];
-            //card.visualPosition.x = x;
-            //card.visualPosition.y = y - i * spacing;
+
             card.visualPosition.x = x;
-            card.visualPosition.y = y - i * (spacing - 0.01f);
+            card.visualPosition.y = y - static_cast<float>(i) * (spacing - 0.01f);
             card.targetPosition.x = x;
-            card.targetPosition.y = y - i * spacing;
+            card.targetPosition.y = y - static_cast<float>(i) * spacing;
             card.scale = 1.1f;
         }
     }
@@ -180,12 +166,12 @@ void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, 
         draggingRun.clear();
         draggingPile = -1;
         draggingStartIndex = -1;
-        state = InputState::Idle;
+        state = DragState::Idle;
     }
 }
 
 void DragController::updateDealing(std::vector<Card> &cards, std::vector<Pile> &piles, Pile &stock) {
-    state = InputState::Idle;
+    state = DragState::Idle;
 }
 
 void DragController::update(const Vec2& mousePos, bool mouseDown,
@@ -195,14 +181,14 @@ void DragController::update(const Vec2& mousePos, bool mouseDown,
         wasMouseDown = mouseDown;
         return;
     }
-    bool justPressed = mouseDown && !wasMouseDown;
-    bool justReleased = !mouseDown && wasMouseDown;
+    const bool justPressed = mouseDown && !wasMouseDown;
+    const bool justReleased = !mouseDown && wasMouseDown;
 
     switch (state) {
-        case InputState::Idle:
+        case DragState::Idle:
             updateIdle(mousePos, justPressed, cards, piles, stock, dealState);
             break;
-        case InputState::Dragging:
+        case DragState::Dragging:
             updateDragging(mousePos, mouseDown, justReleased, cards, piles, stock);
             break;
     }
