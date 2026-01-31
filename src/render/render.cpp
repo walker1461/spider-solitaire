@@ -5,6 +5,7 @@
 #include "cardVertices.h"
 #include <algorithm>
 #include "GLFW/glfw3.h"
+#include "../core/game_rules.h"
 
 unsigned int createCardVAO() {
     unsigned int VBO, VAO;
@@ -62,6 +63,7 @@ unsigned int createShaderProgram() {
         uniform float radius;
         uniform vec2 uSize;
         uniform float uScale;
+        uniform float uDimAmount;
 
         void main() {
             vec2 halfSize = 0.5 * uSize * uScale;
@@ -71,11 +73,13 @@ unsigned int createShaderProgram() {
             vec2 q = p - halfSize + vec2(r);
             float dist = length(max(q, 0.0));
 
+            vec4 texColor = texture2D(cardTexture, TexCoords);
+
             if (dist > r) {
                 discard;
             }
 
-            FragColor = texture(cardTexture, TexCoords);
+            gl_FragColor = vec4(texColor.rgb * uDimAmount, texColor.a);
         }
     )";
 
@@ -100,20 +104,43 @@ unsigned int createShaderProgram() {
     return shaderProgram;
 };
 
+void darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles) {
+    for (Pile& pile : piles) {
+        std::vector<int> runToCheck;
+        // completed piles and stock should not be darkened
+        if (pile.type == PileType::Completed || pile.type == PileType::Stock) {
+            for (int cardIndex : pile.cardIndices) {
+                cards[cardIndex].isDark = false;
+            }
+            continue;
+        }
+
+        const int start = findTopRun(cards, pile);
+
+        // cards in run at top of pile will be bright
+        for (int i = 0; i < pile.cardIndices.size(); i++) {
+            const int cardIndex = pile.cardIndices[i];
+            cards[cardIndex].isDark = (start == -1 || i < start);
+        }
+    }
+}
+
 void Renderer::init() {
     vao = createCardVAO();
     shader = createShaderProgram();
 
     cardBackTexture = loadTexture("textures/Back Red 2.png");
     spaceTexture = loadTexture("textures/Card Space.png");
+    spiderTexture = loadTexture("textures/spider.png");
 
-    offsetLoc = glGetUniformLocation(shader, "offset");
+    offsetLoc  = glGetUniformLocation(shader, "offset");
     sizeLoc    = glGetUniformLocation(shader, "uSize");
     scaleLoc   = glGetUniformLocation(shader, "uScale");
     radiusLoc  = glGetUniformLocation(shader, "radius");
     aspectLoc  = glGetUniformLocation(shader, "uAspect");
     textureLoc = glGetUniformLocation(shader, "cardTexture");
-}
+    dimmerLoc  = glGetUniformLocation(shader, "uDimAmount");
+};
 
 void Renderer::beginFrame(const int w, const int h) const {
     glViewport(0, 0, w, h);
@@ -122,6 +149,15 @@ void Renderer::beginFrame(const int w, const int h) const {
     glUseProgram(shader);
     glBindVertexArray(vao);
     glUniform2f(aspectLoc, static_cast<float>(w) / static_cast<float>(h), 1.0f);
+};
+
+void Renderer::drawSpider() const {
+    glBindTexture(GL_TEXTURE_2D, spiderTexture);
+    glUniform1f(scaleLoc, 2.0f);
+    glUniform1f(radiusLoc, 0.02f);
+    glUniform2f(offsetLoc, 0.0f, 0.0f);
+    glUniform2f(sizeLoc, 0.7f, 1.0f);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::drawPiles(const std::vector<Pile> &piles) const {
@@ -132,8 +168,8 @@ void Renderer::drawPiles(const std::vector<Pile> &piles) const {
         glUniform2f(offsetLoc, pile.basePosition.x, pile.basePosition.y);
         glUniform2f(sizeLoc, 0.22f, 0.3f);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-}
+    };
+};
 
 void Renderer::drawCards(std::vector<Card>& cards) const {
     std::vector<int> renderOrder; // find z-index order to render cards front to back
@@ -199,6 +235,12 @@ GLuint loadTexture(const char* path) {
 };
 
 void renderCard(const Card &card, const unsigned int shaderProgram, const unsigned int cardBack) {
+    if (card.isDark) {
+        glUniform1f(glGetUniformLocation(shaderProgram, "uDimAmount"), 0.1f);
+    } else {
+        glUniform1f(glGetUniformLocation(shaderProgram, "uDimAmount"), 1.0f);
+    }
+
     glUniform2f(glGetUniformLocation(shaderProgram, "offset"),
                 card.visualPosition.x, card.visualPosition.y);
 
