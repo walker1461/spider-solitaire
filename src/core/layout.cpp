@@ -5,11 +5,12 @@ constexpr float VIRTUAL_WIDTH = 2.0f;
 constexpr float VIRTUAL_HEIGHT = 2.0f;
 
 void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& piles) {
-    float maxHeight = 1.8f;
-    constexpr float baseSpacing = 0.07f;
-    float spacing = baseSpacing;
-
     for (const auto &pile : piles) {
+
+        float maxHeight = 1.2f;
+        constexpr float baseSpacing = 0.07f;
+        float spacing = baseSpacing;
+
         if (static_cast<float>(pile.cardIndices.size()) * spacing > maxHeight) {
             spacing = maxHeight / static_cast<float>(pile.cardIndices.size());
         }
@@ -20,7 +21,7 @@ void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& pile
                     continue;
                 }
                 card.targetPosition.x = pile.basePosition.x;
-                card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * 0.07f;
+                card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing;
                 card.indexInPile = i;
             }
         } else {
@@ -53,7 +54,7 @@ bool pointInPile(const Vec2& mouse, const Pile& pile, const Vec2& cardSize) {
            mouse.y <= pile.basePosition.y + halfH;
 }
 
-void layoutPiles(std::vector<Pile> &piles) {
+void layoutPiles(std::vector<Pile> &piles, const GameConfig& cfg) {
     constexpr float marginX = 0.08f;
     constexpr float topY = 0.75f;
 
@@ -61,7 +62,7 @@ void layoutPiles(std::vector<Pile> &piles) {
     constexpr float spacing = usableWidth / 9.0f;
 
     // tableaus
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < cfg.tableauCount; i++) {
         constexpr float tableauY = 0.35f;
         piles[i].basePosition = {
             -1.0f + marginX + spacing * static_cast<float>(i),
@@ -70,11 +71,11 @@ void layoutPiles(std::vector<Pile> &piles) {
     }
 
     // stock
-    piles[10].basePosition = { 0.9f, topY };
+    piles[cfg.stockPileIndex].basePosition = { 0.9f, topY };
 
     // completed piles
-    for (int i = 0; i < 8; i++) {
-        piles[11 + i].basePosition = {
+    for (int i = 0; i < cfg.completedPileCount; i++) {
+        piles[cfg.firstCompletedPileIndex + i].basePosition = {
             -1.0f + marginX + spacing * static_cast<float>(i),
             topY
         };
