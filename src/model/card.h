@@ -25,16 +25,15 @@ struct Card {
     float cornerRadius;
 
     bool isDragging;
-    float dragOffsetX;
-    float dragOffsetY;
 
     int pileIndex;
     int indexInPile;
 
     GLuint textureID;
+    bool isDark;
 };
 
-void startDealing(DealState& deal);
+// void startDealing(DealState& deal);
 
 inline const char* suitToString(Suit suit);
 

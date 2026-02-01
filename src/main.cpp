@@ -115,7 +115,7 @@ int main() {
     	glfwGetFramebufferSize(window, &window_width, &window_height);
 
     	const auto currentTime = static_cast<float>(glfwGetTime());
-    	float deltaTime = currentTime - lastTime;
+    	const float deltaTime = currentTime - lastTime;
     	lastTime = currentTime;
 
         ImGui_ImplOpenGL3_NewFrame();

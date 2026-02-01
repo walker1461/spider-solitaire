@@ -4,51 +4,50 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
+#include <memory>
+
+#include "../render/render.h"
+#include "../rules/spider_rules.h"
 
 constexpr float CARD_HEIGHT = 0.3f;
 constexpr float CARD_WIDTH = CARD_HEIGHT * 0.73f;
 
-Pile& Game::initializeGame(std::vector<Card> &cards, std::vector<Pile> &piles) {
+Pile& Game::initializeGame(std::vector<Card> &deck, std::vector<Pile> &cardPiles) const {
     // ---------- INITIAL DEAL -----------
-    shuffleDeck(cards);
+    shuffleDeck(deck);
     int cardCursor = 0;
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < this->gameConfig.tableauCount; i++) {
         const int count = (i < 4) ? 6 : 5;
         for (int j = 0; j < count; j++) {
-            piles[i].cardIndices.push_back(cardCursor);
-            cards[cardCursor].size = {CARD_WIDTH, CARD_HEIGHT};
-            cards[cardCursor].pileIndex = i;
-            cards[cardCursor].indexInPile = j;
-            cards[cardCursor].faceUp = (j == count - 1);
-            cards[cardCursor].visualPosition = cards[cardCursor].targetPosition;
+            cardPiles[i].cardIndices.push_back(cardCursor);
+            deck[cardCursor].size = {CARD_WIDTH, CARD_HEIGHT};
+            deck[cardCursor].pileIndex = i;
+            deck[cardCursor].indexInPile = j;
+            deck[cardCursor].faceUp = (j == count - 1);
+            deck[cardCursor].visualPosition = deck[cardCursor].targetPosition;
             cardCursor++;
         }
     }
 
     // ----------- CREATE STOCK PILE -----------
-    piles.emplace_back();
-    Pile& stock = piles.back();
+    cardPiles.emplace_back();
+    Pile& stock = cardPiles.back();
     stock.type = PileType::Stock;
-    stock.basePosition = {0.9f, 0.8f};
 
-    while (cardCursor < 104) {
+    while (cardCursor < static_cast<int>(deck.size())) {
         stock.cardIndices.push_back(cardCursor);
 
-        cards[cardCursor].size = {0.22f, 0.3f};
-        cards[cardCursor].faceUp = false;
+        deck[cardCursor].size = gameConfig.cardSize;
+        deck[cardCursor].faceUp = false;
         cardCursor++;
     }
 
     // --------- CREATE COMPLETED PILE SPACES ---------
-    for (int i = 0; i < 8; i++) {
-        constexpr float startX = -0.9f;
-        constexpr float spacing = 0.2f;
-        piles.emplace_back();
-        Pile& completedPile = piles.back();
+    for (int i = 0; i < this->gameConfig.completedPileCount; i++) {
+        cardPiles.emplace_back();
+        Pile& completedPile = cardPiles.back();
         completedPile.type = PileType::Completed;
-        completedPile.basePosition.x = startX + static_cast<float>(i) * spacing;
-        completedPile.basePosition.y = 0.8f;
     }
 
     // tableau piles        stock     completed piles     //
@@ -56,23 +55,32 @@ Pile& Game::initializeGame(std::vector<Card> &cards, std::vector<Pile> &piles) {
     return stock;
 }
 
-void Game::startNewGame(Difficulty difficulty) {
+void Game::startNewGame(const Difficulty difficulty) {
     const int suitCount = (difficulty == Easy) ? 1 : (difficulty == Normal) ? 2 : 4;
     cards = generateDeck(suitCount);
+
+    rules = std::make_unique<SpiderRules>();
+    gameConfig = rules->config();
+
     piles.clear();
-    piles.resize(10);
+    piles.resize(gameConfig.tableauCount);
+
     initializeGame(cards, piles);
-    layoutPiles(piles);
-    stockPileIndex = 10;
+    layoutPiles(piles, gameConfig);
+
+    drag.setRules(rules.get());
+    drag.setConfig(&gameConfig);
+
     state = GameState::GAME;
 }
 
 void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseDown) {
     switch (state) {
         case GameState::GAME:
-            updateDealing(deltaTime, piles[stockPileIndex]);
-            drag.update(mousePos, mouseDown, cards, piles, piles[stockPileIndex], deal);
+            updateDealing(deltaTime, piles[gameConfig.stockPileIndex]);
+            drag.update(mousePos, mouseDown, cards, piles, piles[gameConfig.stockPileIndex], deal);
             updateCardPositions(cards, piles);
+            if (rules) rules->darkenCards(cards, piles);
             break;
         default:
             break;
@@ -80,7 +88,8 @@ void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseD
 }
 
 void Game::render(const Renderer& renderer) {
-    renderer.drawPiles(piles);
+    renderer.drawSpider();
+    renderer.drawPiles(piles, gameConfig.cardSize);
     renderer.drawCards(cards);
 }
 
@@ -100,7 +109,7 @@ void Game::updateDealing(const float deltaTime, Pile& stock) {
     deal.timer += deltaTime;
     if (deal.timer < deal.delay) return;
     deal.timer = 0.0f;
-    if (stock.cardIndices.empty() || deal.nextPile >= 10) {
+    if (stock.cardIndices.empty() || deal.nextPile >= this->gameConfig.tableauCount) {
         deal.active = false;
         return;
     }

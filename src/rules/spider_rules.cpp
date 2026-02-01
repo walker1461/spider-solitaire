@@ -1,9 +1,80 @@
-#include "../games/spider_rules.h"
-#include "../core/game_rules.h"
-#include "../model/pile.h"
-#include "../core/game.h"
+#include "spider_rules.h"
 
-// ------ HELPERS ------
+#include "run_rules.h"
+#include "../model/pile.h"
+#include "core/move_system.h"
+
+namespace {
+    constexpr GameConfig kSpiderConfig{
+        .firstTableauPileIndex = 0,
+        .tableauCount = 10,
+        .stockPileIndex = 10,
+        .firstCompletedPileIndex = 11,
+        .completedPileCount = 8,
+        .cardSize = {0.22f, 0.3f},
+    };
+
+    bool isCompleteRun(const std::vector<Card>& cards, const Pile& pile) {
+        if (pile.cardIndices.size() < 13) return false;
+        const int start = static_cast<int>(pile.cardIndices.size() - 13);
+
+        for (int i = start; i < pile.cardIndices.size() - 1; i++) {
+            const Card& a = cards[pile.cardIndices[i]];
+            const Card& b = cards[pile.cardIndices[i + 1]];
+
+            if (!a.faceUp || !b.faceUp) return false;
+            if (a.suit != b.suit) return false;
+            if (a.rank != b.rank + 1) return false;
+        }
+        return true;
+    }
+    void autoComplete(std::vector<Card>& cards, std::vector<Pile>& piles, const GameConfig& cfg, const int fromPile,
+                      const std::vector<int>& draggingRun, const int draggingStartIndex) {
+        int toPile = -1;
+
+        const int start = cfg.firstCompletedPileIndex;
+        const int end = start + cfg.completedPileCount;
+
+        for (int i = start; i < end; i++) {
+            if (piles[i].type == PileType::Completed && piles[i].cardIndices.empty()) {
+                toPile = i;
+                break;
+            }
+        }
+
+        if (toPile == -1) return;
+
+        Pile& destination = piles[toPile];
+        Pile& source = piles[fromPile];
+
+        for (int cardIndex : draggingRun) {
+            destination.cardIndices.push_back(cardIndex);
+            cards[cardIndex].pileIndex = toPile;
+        }
+
+        source.cardIndices.erase(source.cardIndices.begin() + draggingStartIndex, source.cardIndices.end());
+        if (!source.cardIndices.empty()) {
+            cards[source.cardIndices.back()].faceUp = true;
+        }
+    }
+}
+
+GameConfig SpiderRules::config() const {
+    return kSpiderConfig;
+}
+
+void SpiderRules::onDrop(std::vector<Card> &cards, std::vector<Pile> &piles, const int fromPile,
+                         const int toPile, const int startIndex) {
+    moveRun(cards, piles, fromPile, toPile, startIndex);
+
+    if (const Pile& destination = piles[toPile]; isCompleteRun(cards, destination)) {
+        std::vector<int> completeRun;
+        for (int i = static_cast<int>(destination.cardIndices.size() - 13); i < destination.cardIndices.size(); i++) {
+            completeRun.push_back(destination.cardIndices[i]);
+        }
+        autoComplete(cards, piles, kSpiderConfig, toPile, completeRun, static_cast<int>(destination.cardIndices.size() - 13));
+    }
+}
 
 bool canDropRun(const std::vector<Card>& cards, const Pile& destination, const int movingCardIndex) {
     if (destination.type == PileType::Completed || destination.type == PileType::Stock) return false;
@@ -20,14 +91,9 @@ bool SpiderRules::canPickUp(const std::vector<Card> &cards, const Pile &pile, co
 }
 
 bool SpiderRules::canDrop(const std::vector<Card> &cards, const Pile &from, const Pile &to,
-                          const int startIndex) {
+                          const int movingCardIndex) {
 
-    return canDropRun(cards, to, startIndex);
-}
-
-void SpiderRules::onDrop(std::vector<Card> &cards, std::vector<Pile> &piles, int fromPile,
-                         int toPile, int startIndex) {
-    moveRun(cards, piles, fromPile, toPile, startIndex);
+    return canDropRun(cards, to, movingCardIndex);
 }
 
 bool SpiderRules::canDeal(const std::vector<Pile> &piles, const int stockPile,
@@ -43,9 +109,9 @@ bool SpiderRules::canDeal(const std::vector<Pile> &piles, const int stockPile,
 }
 
 void SpiderRules::deal(std::vector<Card> &cards, std::vector<Pile> &piles){
-    int stock = 10;
-    int firstTableau = 0;
-    int tableauCount = 10;
+    constexpr int stock = kSpiderConfig.stockPileIndex;
+    constexpr int firstTableau = kSpiderConfig.firstTableauPileIndex;
+    constexpr int tableauCount = kSpiderConfig.tableauCount;
 
     for (int i = 0; i < tableauCount; i++) {
         int card = piles[stock].cardIndices.back();
@@ -56,4 +122,23 @@ void SpiderRules::deal(std::vector<Card> &cards, std::vector<Pile> &piles){
     }
 }
 
-std::vector<Pile> spiderLayout = {{PileType::Tableau, {-0.9, 0.4f}, {}, -1, true}};
+void SpiderRules::darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles) {
+    for (Pile& pile : piles) {
+        std::vector<int> runToCheck;
+        // completed piles and stock should not be darkened
+        if (pile.type == PileType::Completed || pile.type == PileType::Stock) {
+            for (const int cardIndex : pile.cardIndices) {
+                cards[cardIndex].isDark = false;
+            }
+            continue;
+        }
+
+        const int start = findTopRun(cards, pile);
+
+        // cards in run at the top of a tableau pile will be bright
+        for (int i = 0; i < pile.cardIndices.size(); i++) {
+            const int cardIndex = pile.cardIndices[i];
+            cards[cardIndex].isDark = (start == -1 || i < start);
+        }
+    }
+}

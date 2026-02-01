@@ -6,11 +6,11 @@
 
 static std::unordered_map<std::string, GLuint> textureCache;
 
-void startDealing(DealState& deal) {
-    deal.active = true;
-    deal.timer = 0.0f;
-    deal.nextPile = 0;
-}
+// void startDealing(DealState& deal) {
+//     deal.active = true;
+//     deal.timer = 0.0f;
+//     deal.nextPile = 0;
+// }
 
 inline const char* suitToString(const Suit suit) {
     switch (suit) {

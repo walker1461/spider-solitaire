@@ -1,10 +1,13 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include "../model/card.h"
 #include "../model/pile.h"
 #include "../model/dealState.h"
 #include "../input/card_drag.h"
-#include "../render/render.h"
+#include "../core/game_config.h"
+
+class Renderer;
 
 enum GameState {
     NEWGAME,
@@ -21,22 +24,21 @@ enum Difficulty {
 };
 
 struct Game {
-    Game() = default;
 
-    static Pile& initializeGame(std::vector<Card> &cards, std::vector<Pile> &piles);
+    Pile& initializeGame(std::vector<Card> &deck, std::vector<Pile> &cardPiles) const;
     void startNewGame(Difficulty difficulty);
     void update(float deltaTime, const Vec2& mousePos, bool mouseDown);
     void render(const Renderer& renderer);
 
     GameState state = GameState::MENU;
 
-private:
     std::vector<Card> cards;
     std::vector<Pile> piles;
     DealState deal;
+    std::unique_ptr<GameRules> rules;
     DragController drag;
 
-    int stockPileIndex = -1;
+    GameConfig gameConfig;
 
     void startDealing();
     void updateDealing(float deltaTime, Pile& stock);

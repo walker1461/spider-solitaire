@@ -5,7 +5,6 @@
 
 unsigned int createCardVAO();
 unsigned int createShaderProgram();
-void darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles);
 GLuint loadTexture(const char* path);
 void renderCard(const Card &card, unsigned int shaderProgram, unsigned int cardBack);
 
@@ -14,7 +13,7 @@ public:
     void init();
     void beginFrame(int w, int h) const;
     void drawSpider() const;
-    void drawPiles(const std::vector<Pile>& piles) const;
+    void drawPiles(const std::vector<Pile>& piles, Vec2 pileSize) const;
     void drawCards(std::vector<Card>& cards) const;
     static void endFrame();
 

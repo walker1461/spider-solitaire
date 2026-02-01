@@ -4,9 +4,10 @@
 #include "../model/dealState.h"
 #include "../math/vectors.h"
 #include "../model/pile.h"
+#include "../rules/game_rules.h"
+#include "../core/game_config.h"
 
 Vec2 screenToWorld(double x, double y, int w, int h);
-void moveRun(std::vector<Card>& cards, std::vector<Pile>& piles, int fromPile, int toPile, int startIndex);
 
 enum class DragState {
     Idle,
@@ -14,23 +15,23 @@ enum class DragState {
 };
 
 class DragController {
-    public:
-        DragState state = DragState::Idle;
+public:
+    void setRules(GameRules* rules);
+    void setConfig(const GameConfig* config);
 
-        std::vector<int> draggingRun;
-        int draggingPile = -1;
-        int draggingStartIndex = -1;
-        Vec2 dragOffset;
-        bool wasMouseDown = false;
+    void update(const Vec2& mousePos, bool mouseDown, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, DealState& dealState);
+private:
+    GameRules* gameRules = nullptr;
+    const GameConfig* gameConfig = nullptr;
 
-        void update(const Vec2& mousePos, bool mouseDown, std::vector<Card>& cards,
-                    std::vector<Pile>& piles, Pile& stock, DealState& dealState);
-    private:
-        void updateIdle(const Vec2& mousePos, bool justPressed, std::vector<Card>& cards,
-                    std::vector<Pile>& piles, const Pile& stock, DealState& dealState);
+    DragState state = DragState::Idle;
+    Vec2 dragOffset = {};
+    std::vector<int> draggingRun;
+    int draggingPile = -1;
+    int draggingStartIndex = -1;
+    bool wasMouseDown = false;
 
-        void updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased,
-                    std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
-
-        void updateDealing(std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
+    void updateIdle(const Vec2& mousePos, bool justPressed, std::vector<Card>& cards, std::vector<Pile>& piles, const Pile& stock, DealState& dealState);
+    void updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
+    void updateDealing(std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
 };

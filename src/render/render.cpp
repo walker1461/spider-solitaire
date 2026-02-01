@@ -5,7 +5,6 @@
 #include "cardVertices.h"
 #include <algorithm>
 #include "GLFW/glfw3.h"
-#include "../core/game_rules.h"
 
 unsigned int createCardVAO() {
     unsigned int VBO, VAO;
@@ -104,27 +103,6 @@ unsigned int createShaderProgram() {
     return shaderProgram;
 };
 
-void darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles) {
-    for (Pile& pile : piles) {
-        std::vector<int> runToCheck;
-        // completed piles and stock should not be darkened
-        if (pile.type == PileType::Completed || pile.type == PileType::Stock) {
-            for (int cardIndex : pile.cardIndices) {
-                cards[cardIndex].isDark = false;
-            }
-            continue;
-        }
-
-        const int start = findTopRun(cards, pile);
-
-        // cards in run at top of pile will be bright
-        for (int i = 0; i < pile.cardIndices.size(); i++) {
-            const int cardIndex = pile.cardIndices[i];
-            cards[cardIndex].isDark = (start == -1 || i < start);
-        }
-    }
-}
-
 void Renderer::init() {
     vao = createCardVAO();
     shader = createShaderProgram();
@@ -160,7 +138,7 @@ void Renderer::drawSpider() const {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::drawPiles(const std::vector<Pile> &piles) const {
+void Renderer::drawPiles(const std::vector<Pile> &piles, Vec2 pileSize) const {
     glBindTexture(GL_TEXTURE_2D, spaceTexture);
     glUniform1f(scaleLoc, 1.0f);
     glUniform1f(radiusLoc, 0.02f);
@@ -236,7 +214,7 @@ GLuint loadTexture(const char* path) {
 
 void renderCard(const Card &card, const unsigned int shaderProgram, const unsigned int cardBack) {
     if (card.isDark) {
-        glUniform1f(glGetUniformLocation(shaderProgram, "uDimAmount"), 0.1f);
+        glUniform1f(glGetUniformLocation(shaderProgram, "uDimAmount"), 0.75f);
     } else {
         glUniform1f(glGetUniformLocation(shaderProgram, "uDimAmount"), 1.0f);
     }

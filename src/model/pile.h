@@ -12,4 +12,6 @@ struct Pile {
     PileType type;
     Vec2 basePosition;
     std::vector<int> cardIndices;
+    int maxCards = -1;
+    bool fanDown = true;
 };
