@@ -4,6 +4,8 @@
 #include "stb_image.h"
 #include "cardVertices.h"
 #include <algorithm>
+#include <unordered_map>
+
 #include "GLFW/glfw3.h"
 
 unsigned int createCardVAO() {
@@ -19,7 +21,7 @@ unsigned int createCardVAO() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void *>(nullptr));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     return VAO;
@@ -83,16 +85,16 @@ unsigned int createShaderProgram() {
     )";
 
     auto compileShader = [](unsigned int type, const char* src) {
-        unsigned int shader = glCreateShader(type);
+        unsigned int const shader = glCreateShader(type);
         glShaderSource(shader, 1, &src, nullptr);
         glCompileShader(shader);
         return shader;
     };
 
-    unsigned int vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
-    unsigned int fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    unsigned int const vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
+    unsigned int const fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 
-    unsigned int shaderProgram = glCreateProgram();
+    unsigned int const shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
@@ -127,6 +129,7 @@ void Renderer::beginFrame(const int w, const int h) const {
     glUseProgram(shader);
     glBindVertexArray(vao);
     glUniform2f(aspectLoc, static_cast<float>(w) / static_cast<float>(h), 1.0f);
+    glUniform1f(dimmerLoc, 1.0f);
 };
 
 void Renderer::drawSpider() const {
@@ -135,21 +138,25 @@ void Renderer::drawSpider() const {
     glUniform1f(radiusLoc, 0.02f);
     glUniform2f(offsetLoc, 0.0f, 0.0f);
     glUniform2f(sizeLoc, 0.7f, 1.0f);
+    glUniform1f(dimmerLoc, 1.0f);
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::drawPiles(const std::vector<Pile> &piles, Vec2 pileSize) const {
+void Renderer::drawPiles(const std::vector<Pile> &piles, const Vec2 pileSize) const {
     glBindTexture(GL_TEXTURE_2D, spaceTexture);
     glUniform1f(scaleLoc, 1.0f);
     glUniform1f(radiusLoc, 0.02f);
+    glUniform1f(dimmerLoc, 1.0f);
+
     for (const auto& pile : piles) {
         glUniform2f(offsetLoc, pile.basePosition.x, pile.basePosition.y);
-        glUniform2f(sizeLoc, 0.22f, 0.3f);
+        glUniform2f(sizeLoc, pileSize.x, pileSize.y);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     };
 };
 
-void Renderer::drawCards(std::vector<Card>& cards) const {
+void Renderer::drawCards(std::vector<Card>& cards) const{
     std::vector<int> renderOrder; // find z-index order to render cards front to back
     for (int i = 0; i < cards.size(); i++) {
         renderOrder.push_back(i);
@@ -157,29 +164,56 @@ void Renderer::drawCards(std::vector<Card>& cards) const {
 
     //const bool initialDealPhase = (cardsStillMoving > 10);
     std::sort(renderOrder.begin(), renderOrder.end(), [&](const int a, const int b) {
+        // dragging cards always on top
         if (cards[a].isDragging != cards[b].isDragging) return !cards[a].isDragging;
+
+        // lifted cards on top of non-lifted cards
+        if (cards[a].isLifted != cards[b].isLifted) return !cards[a].isLifted;
+
+        // sort by pile then position in pile
         if (cards[a].pileIndex != cards[b].pileIndex) return cards[a].pileIndex < cards[b].pileIndex;
         return cards[a].indexInPile < cards[b].indexInPile;
     });
 
+    // get the time passed for animating cards
     static auto lastTime = static_cast<float>(glfwGetTime());
     const auto currentTime = static_cast<float>(glfwGetTime());
     float deltaTime = currentTime - lastTime;
     lastTime = currentTime;
     if (deltaTime > 0.05f) deltaTime = 0.05f;
 
+    // track which lift groups are done moving
+    std::unordered_map<int, bool> liftGroupDone;
+    constexpr float EPSILON = 0.01f;
+
     for (const int i : renderOrder) {
         Card& card = cards[i];
         if (!card.isDragging) {
             const Vec2 delta = card.targetPosition - card.visualPosition;
-            float distSq = delta.x * delta.x + delta.y * delta.y;
-            //if (distSq < settleEpsilonSq) {
-            //    card.visualPosition = card.targetPosition;
-            //} else {
-                card.visualPosition = card.visualPosition + (delta * 12.0f * deltaTime);
-            //}
+            card.visualPosition = card.visualPosition + (delta * 12.0f * deltaTime);
+
+            // Check if this card is still moving
+            const float dist = abs(card.visualPosition.x - card.targetPosition.x) +
+                              abs(card.visualPosition.y - card.targetPosition.y);
+            if (card.isLifted && card.liftGroupId > 0) {
+                if (liftGroupDone.find(card.liftGroupId) == liftGroupDone.end()) {
+                    liftGroupDone[card.liftGroupId] = true;
+                }
+                if (dist > EPSILON) {
+                    liftGroupDone[card.liftGroupId] = false;
+                }
+            }
         }
         renderCard(card, shader, cardBackTexture);
+    }
+
+    // clear isLifted for entire groups that have finished moving
+    for (auto& card : cards) {
+        if (card.isLifted && card.liftGroupId > 0) {
+            if (liftGroupDone[card.liftGroupId]) {
+                card.isLifted = false;
+            }
+        }
     }
 }
 

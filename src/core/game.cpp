@@ -109,12 +109,15 @@ void Game::updateDealing(const float deltaTime, Pile& stock) {
     deal.timer += deltaTime;
     if (deal.timer < deal.delay) return;
     deal.timer = 0.0f;
+
     if (stock.cardIndices.empty() || deal.nextPile >= this->gameConfig.tableauCount) {
         deal.active = false;
         return;
     }
+
     const int cardIndex = stock.cardIndices.back();
     stock.cardIndices.pop_back();
+
     Card& card = cards[cardIndex];
     card.faceUp = true;
     card.pileIndex = deal.nextPile;
@@ -123,6 +126,12 @@ void Game::updateDealing(const float deltaTime, Pile& stock) {
     card.visualPosition = stock.basePosition;
     card.targetPosition = piles[deal.nextPile].basePosition;
 
+    static int nextLiftGroupId = 100000;
+    card.isDragging = false;
+    card.isLifted = true;
+    card.liftGroupId = nextLiftGroupId++;
+
     piles[deal.nextPile].cardIndices.push_back(cardIndex);
+
     deal.nextPile++;
 }

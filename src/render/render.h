@@ -14,7 +14,7 @@ public:
     void beginFrame(int w, int h) const;
     void drawSpider() const;
     void drawPiles(const std::vector<Pile>& piles, Vec2 pileSize) const;
-    void drawCards(std::vector<Card>& cards) const;
+    void drawCards(std::vector<Card> &cards) const;
     static void endFrame();
 
 private:

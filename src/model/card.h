@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include "glad/glad.h"
-#include "dealState.h"
 
 enum class Suit {
     Spades,
@@ -25,6 +24,8 @@ struct Card {
     float cornerRadius;
 
     bool isDragging;
+    bool isLifted;
+    int liftGroupId;
 
     int pileIndex;
     int indexInPile;
@@ -32,8 +33,6 @@ struct Card {
     GLuint textureID;
     bool isDark;
 };
-
-// void startDealing(DealState& deal);
 
 inline const char* suitToString(Suit suit);
 

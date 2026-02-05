@@ -39,7 +39,7 @@ void DragController::updateIdle(const Vec2 &mousePos, const bool justPressed, st
 
         for (int i = static_cast<int>(pile.cardIndices.size() - 1); i >= 0; i--) {
             const int cardIndex = pile.cardIndices[i];
-            Card& card = cards[cardIndex];
+            Card const& card = cards[cardIndex];
             if (!card.faceUp) break;
             if (!pointInCard(mousePos, card)) continue;
             if (!gameRules->canPickUp(cards, pile, i)) continue;
@@ -47,10 +47,15 @@ void DragController::updateIdle(const Vec2 &mousePos, const bool justPressed, st
             draggingPile = p;
             draggingStartIndex = i;
 
+            static int nextLiftGroupId = 1;
+            const int groupId = nextLiftGroupId++;
+
             for (int j = i; j < pile.cardIndices.size(); j++) {
-                int idx = pile.cardIndices[j];
+                int const idx = pile.cardIndices[j];
                 draggingRun.push_back(idx);
                 cards[idx].isDragging = true;
+                cards[idx].isLifted = true;
+                cards[idx].liftGroupId = groupId;
                 cards[idx].indexInPile = maxIndex + (j - i) + 1;
             }
 
@@ -84,7 +89,7 @@ void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, 
         if (gameConfig != nullptr) {
             for (int i = 0; i < gameConfig->tableauCount; i++) {
                 const Pile& pile = piles[i];
-                float halfWidth = card.size.x * 0.5f;
+                float const halfWidth = card.size.x * 0.5f;
                 if (card.targetPosition.x >= pile.basePosition.x - halfWidth &&
                     card.targetPosition.x <= pile.basePosition.x + halfWidth) {
                     targetPile = i;
@@ -103,6 +108,7 @@ void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, 
         for (const int idx : draggingRun) {
             Card& c = cards[idx];
             c.isDragging = false;
+            c.isLifted = true;
             c.scale = 1.0f;
         }
 

@@ -1,5 +1,4 @@
 #include "spider_rules.h"
-
 #include "run_rules.h"
 #include "../model/pile.h"
 #include "core/move_system.h"
@@ -47,7 +46,7 @@ namespace {
         Pile& destination = piles[toPile];
         Pile& source = piles[fromPile];
 
-        for (int cardIndex : draggingRun) {
+        for (int const cardIndex : draggingRun) {
             destination.cardIndices.push_back(cardIndex);
             cards[cardIndex].pileIndex = toPile;
         }
@@ -114,7 +113,7 @@ void SpiderRules::deal(std::vector<Card> &cards, std::vector<Pile> &piles){
     constexpr int tableauCount = kSpiderConfig.tableauCount;
 
     for (int i = 0; i < tableauCount; i++) {
-        int card = piles[stock].cardIndices.back();
+        int const card = piles[stock].cardIndices.back();
         piles[stock].cardIndices.pop_back();
 
         piles[firstTableau + i].cardIndices.push_back(card);
@@ -124,7 +123,7 @@ void SpiderRules::deal(std::vector<Card> &cards, std::vector<Pile> &piles){
 
 void SpiderRules::darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles) {
     for (Pile& pile : piles) {
-        std::vector<int> runToCheck;
+        std::vector<int> const runToCheck;
         // completed piles and stock should not be darkened
         if (pile.type == PileType::Completed || pile.type == PileType::Stock) {
             for (const int cardIndex : pile.cardIndices) {

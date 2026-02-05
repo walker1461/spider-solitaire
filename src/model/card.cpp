@@ -6,12 +6,6 @@
 
 static std::unordered_map<std::string, GLuint> textureCache;
 
-// void startDealing(DealState& deal) {
-//     deal.active = true;
-//     deal.timer = 0.0f;
-//     deal.nextPile = 0;
-// }
-
 inline const char* suitToString(const Suit suit) {
     switch (suit) {
         case Suit::Spades: return "Spades";
@@ -30,7 +24,7 @@ std::string getCardTexture(const Suit suit, const int rank) {
            ".png";
 }
 
-std::vector<Card> generateDeck(int suitCount) {
+std::vector<Card> generateDeck(const int suitCount) {
     std::vector<Suit> suits;
 
     if (suitCount == 1) {
@@ -41,11 +35,11 @@ std::vector<Card> generateDeck(int suitCount) {
         suits = {Suit::Spades, Suit::Hearts, Suit::Diamond, Suit::Clubs};
     }
 
-    int decksPerSuit = 104 / (13 * suitCount);
+    int const decksPerSuit = 104 / (13 * suitCount);
     std::vector<Card> deck;
 
     for (int d = 0; d < decksPerSuit; d++) {
-        for (Suit suit : suits) {
+        for (const Suit suit : suits) {
             for (int rank = 1; rank <= 13; rank++) {
                 Card card{};
                 card.suit = suit;
@@ -56,10 +50,12 @@ std::vector<Card> generateDeck(int suitCount) {
                 card.scale = 1.0f;
                 card.cornerRadius = 0.02f;
                 card.isDragging = false;
+                card.isLifted = false;
+                card.liftGroupId = -1;
                 card.indexInPile = -1;
                 card.pileIndex = -1;
 
-                std::string path = getCardTexture(suit, rank);
+                std::string const path = getCardTexture(suit, rank);
                 if (textureCache.find(path) == textureCache.end()) {
                     textureCache[path] = loadTexture(path.c_str());
                 }
