@@ -14,10 +14,15 @@ void moveRun(std::vector<Card>& cards, std::vector<Pile>& piles, const int fromP
         cards[source.cardIndices.back()].faceUp = true;
     }
 
-    for (int idx : run) {
+    static int nextLiftGroupId = 1;
+    const int groupId = nextLiftGroupId++;
+
+    for (int const idx : run) {
         destination.cardIndices.push_back(idx);
         cards[idx].pileIndex = toPile;
         cards[idx].isDragging = false;
+        cards[idx].isLifted = true;
+        cards[idx].liftGroupId = groupId;
         cards[idx].scale = 1.0f;
     }
 };
