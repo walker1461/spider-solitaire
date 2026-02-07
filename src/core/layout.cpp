@@ -86,7 +86,7 @@ bool pointInPile(const Vec2& mouse, const Pile& pile, const Vec2& cardSize) {
 }
 
 void layoutPiles(std::vector<Pile> &piles, const GameConfig& cfg) {
-    constexpr float marginX = 0.18f;
+    constexpr float marginX = 0.14f;
     constexpr float topY = 0.75f;
 
     constexpr float usableWidth = 2.0f - marginX * 2.0f;
