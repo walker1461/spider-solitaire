@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "game_rules.h"
-#include "../model/autoState.h"
 
 class SpiderRules : public GameRules {
 public:
