@@ -102,7 +102,6 @@ int main() {
     Difficulty difficulty = Normal;
 
     static auto lastTime = static_cast<float>(glfwGetTime());
-    constexpr float menuCoolDown = 0.1f;
 
     // ----------- GAME LOOP -----------
     while (!glfwWindowShouldClose(window)) {
@@ -143,7 +142,7 @@ int main() {
 		static bool isPaused = false;
     	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     		lastEscPress = currentTime;
-    		if (escDeltaTime > menuCoolDown && game.state != MENU) isPaused = !isPaused;
+    		if (escDeltaTime > 0.1f && game.state != MENU) isPaused = !isPaused;
     	}
 
     	if (isPaused) {

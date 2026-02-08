@@ -28,11 +28,7 @@ void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& pile
             }
         }
 
-        // float const lastFaceDownOriginalPosition = pile.basePosition.y - (static_cast<float>(lastFaceDownIndex) * baseSpacing);
-        // float const lastFaceDownShiftedPosition = pile.basePosition.y - (static_cast<float>(lastFaceDownIndex) * faceDownSpacing);
-        // float const faceDownOffset = lastFaceDownShiftedPosition - lastFaceDownOriginalPosition;
-
-        float const faceDownOffset = (lastFaceDownIndex + 1) * (spacing - faceDownSpacing);
+        float const faceDownOffset = (static_cast<float>(lastFaceDownIndex) + 1) * (spacing - faceDownSpacing);
 
         const bool isTableau = (pile.type != PileType::Stock && pile.type != PileType::Completed);
 
@@ -58,13 +54,6 @@ void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& pile
                     card.targetPosition.y = pile.basePosition.y - (static_cast<float>(i) * spacing) + faceDownOffset;
                 }
 
-                //if (card.faceUp && spacing != baseSpacing) {
-                //    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing + faceDownOffset; // plus the distance the last face down card is from its original unshifted position
-                //} else if (card.faceUp) {
-                //    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing;
-                //} else {
-                //    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * faceDownSpacing;
-                //}
             } else {
                 card.targetPosition = pile.basePosition;
             }
