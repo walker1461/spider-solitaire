@@ -74,17 +74,17 @@ unsigned int createShaderProgram() {
             vec2 q = p - halfSize + vec2(r);
             float dist = length(max(q, 0.0));
 
-            vec4 texColor = texture2D(cardTexture, TexCoords);
+            vec4 texColor = texture(cardTexture, TexCoords);
 
             if (dist > r) {
                 discard;
             }
 
-            gl_FragColor = vec4(texColor.rgb * uDimAmount, texColor.a);
+            FragColor = vec4(texColor.rgb * uDimAmount, texColor.a);
         }
     )";
 
-    auto compileShader = [](unsigned int type, const char* src) {
+    auto compileShader = [](const unsigned int type, const char* src) {
         unsigned int const shader = glCreateShader(type);
         glShaderSource(shader, 1, &src, nullptr);
         glCompileShader(shader);
