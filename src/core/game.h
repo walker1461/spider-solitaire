@@ -6,6 +6,7 @@
 #include "../model/dealState.h"
 #include "../input/card_drag.h"
 #include "../core/game_config.h"
+#include "../model/autoState.h"
 
 class Renderer;
 
@@ -35,13 +36,16 @@ struct Game {
     std::vector<Card> cards;
     std::vector<Pile> piles;
     DealState deal;
+    AutoState autoState;
     std::unique_ptr<GameRules> rules;
     DragController drag;
 
     GameConfig gameConfig;
+    bool hasWon = false;
 
     void startDealing();
     void updateDealing(float deltaTime, Pile& stock);
+    void updateAutoComplete(float deltaTime);
 };
 
 void shuffleDeck(std::vector<Card> &cards);

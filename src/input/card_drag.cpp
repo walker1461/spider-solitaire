@@ -66,7 +66,7 @@ void DragController::updateIdle(const Vec2 &mousePos, const bool justPressed, st
     }
 }
 
-void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, const bool justReleased, std::vector<Card> &cards, std::vector<Pile> &piles, Pile &stock) {
+void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, const bool justReleased, std::vector<Card> &cards, std::vector<Pile> &piles, Pile &stock, AutoState& autoState, float deltaTime) {
     if (mouseDown) {
         auto [x, y] = mousePos - dragOffset;
         for (int i = 0; i < draggingRun.size(); i++) {
@@ -101,7 +101,7 @@ void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, 
         if (targetPile != -1 && gameRules != nullptr) {
             const int movingCardIndex = piles[draggingPile].cardIndices[draggingStartIndex];
             if (gameRules->canDrop(cards, piles[draggingPile], piles[targetPile], movingCardIndex)) {
-                gameRules->onDrop(cards, piles, draggingPile, targetPile, draggingStartIndex);
+                gameRules->onDrop(cards, piles, draggingPile, targetPile, draggingStartIndex, autoState, deltaTime);
             }
         }
 
@@ -125,8 +125,8 @@ void DragController::updateDealing(std::vector<Card> &cards, std::vector<Pile> &
 
 void DragController::update(const Vec2& mousePos, const bool mouseDown,
                             std::vector<Card>& cards, std::vector<Pile>& piles,
-                            Pile& stock, DealState& dealState) {
-    if (dealState.active) {
+                            Pile& stock, DealState& dealState, AutoState& autoState, float deltaTime) {
+    if (dealState.active || autoState.active) {
         wasMouseDown = mouseDown;
         return;
     }
@@ -138,7 +138,7 @@ void DragController::update(const Vec2& mousePos, const bool mouseDown,
             updateIdle(mousePos, justPressed, cards, piles, stock, dealState);
             break;
         case DragState::Dragging:
-            updateDragging(mousePos, mouseDown, justReleased, cards, piles, stock);
+            updateDragging(mousePos, mouseDown, justReleased, cards, piles, stock, autoState, deltaTime);
             break;
     }
     wasMouseDown = mouseDown;

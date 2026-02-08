@@ -2,6 +2,7 @@
 #include <vector>
 #include "../model/card.h"
 #include "../model/dealState.h"
+#include "../model/autoState.h"
 #include "../math/vectors.h"
 #include "../model/pile.h"
 #include "../rules/game_rules.h"
@@ -19,7 +20,7 @@ public:
     void setRules(GameRules* rules);
     void setConfig(const GameConfig* config);
 
-    void update(const Vec2& mousePos, bool mouseDown, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, DealState& dealState);
+    void update(const Vec2& mousePos, bool mouseDown, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, DealState& dealState, AutoState& autoState, float deltaTime);
 private:
     GameRules* gameRules = nullptr;
     const GameConfig* gameConfig = nullptr;
@@ -32,6 +33,6 @@ private:
     bool wasMouseDown = false;
 
     void updateIdle(const Vec2& mousePos, bool justPressed, std::vector<Card>& cards, std::vector<Pile>& piles, const Pile& stock, DealState& dealState);
-    void updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
+    void updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, AutoState& autoState, float deltaTime);
     void updateDealing(std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
 };

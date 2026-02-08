@@ -10,29 +10,29 @@ void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& pile
 
         constexpr float baseSpacing = 0.07f;
         float spacing = baseSpacing;
-        float faceDownSpacing = baseSpacing;
+        constexpr float faceDownBaseSpacing = 0.04f;
+        float faceDownSpacing = faceDownBaseSpacing;
 
-        constexpr float maxHeight = 1.2f;
-
-        if (static_cast<float>(pile.cardIndices.size()) * spacing > maxHeight) {
+        if (constexpr float maxHeight = 1.25f; static_cast<float>(pile.cardIndices.size()) * spacing > maxHeight) {
             spacing = maxHeight / static_cast<float>(pile.cardIndices.size());
-            faceDownSpacing = spacing * 0.80f;
+            faceDownSpacing = (maxHeight / static_cast<float>(pile.cardIndices.size())) - 0.03f;
         }
 
         //get last face down card
-        int lastFaceDownIndex{0};
-        for (int i = 0; i < static_cast<int>(pile.cardIndices.size()); i++) {
-            const int cardIndex = pile.cardIndices[i];
+        int lastFaceDownIndex{-1};
+        for (const int cardIndex : pile.cardIndices) {
             if (!cards[cardIndex].faceUp) {
-                lastFaceDownIndex = cardIndex;
+                lastFaceDownIndex = cards[cardIndex].indexInPile;
             } else {
                 break;
             }
         }
 
-        float const lastFaceDownOriginalPosition = pile.basePosition.y - cards[lastFaceDownIndex].indexInPile * baseSpacing;
-        float const lastFaceDownShiftedPosition = pile.basePosition.y- cards[lastFaceDownIndex].indexInPile * faceDownSpacing;
-        float const faceDownOffset = lastFaceDownShiftedPosition - lastFaceDownOriginalPosition;
+        // float const lastFaceDownOriginalPosition = pile.basePosition.y - (static_cast<float>(lastFaceDownIndex) * baseSpacing);
+        // float const lastFaceDownShiftedPosition = pile.basePosition.y - (static_cast<float>(lastFaceDownIndex) * faceDownSpacing);
+        // float const faceDownOffset = lastFaceDownShiftedPosition - lastFaceDownOriginalPosition;
+
+        float const faceDownOffset = (lastFaceDownIndex + 1) * (spacing - faceDownSpacing);
 
         const bool isTableau = (pile.type != PileType::Stock && pile.type != PileType::Completed);
 
@@ -51,13 +51,20 @@ void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& pile
 
             if (isTableau) {
                 card.targetPosition.x = pile.basePosition.x;
-                if (card.faceUp && spacing != baseSpacing) {
-                    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing + faceDownOffset; // plus the distance the last face down card is from its original unshifted position
-                } else if (card.faceUp) {
-                    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing;
+
+                if (!card.faceUp) {
+                    card.targetPosition.y = pile.basePosition.y - (static_cast<float>(i) * faceDownSpacing);
                 } else {
-                    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * faceDownSpacing;
+                    card.targetPosition.y = pile.basePosition.y - (static_cast<float>(i) * spacing) + faceDownOffset;
                 }
+
+                //if (card.faceUp && spacing != baseSpacing) {
+                //    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing + faceDownOffset; // plus the distance the last face down card is from its original unshifted position
+                //} else if (card.faceUp) {
+                //    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * spacing;
+                //} else {
+                //    card.targetPosition.y = pile.basePosition.y - static_cast<float>(i) * faceDownSpacing;
+                //}
             } else {
                 card.targetPosition = pile.basePosition;
             }
@@ -102,7 +109,7 @@ void layoutPiles(std::vector<Pile> &piles, const GameConfig& cfg) {
     }
 
     // stock
-    piles[cfg.stockPileIndex].basePosition = { 0.9f, topY };
+    piles[cfg.stockPileIndex].basePosition = { 1.0f - marginX, topY };
 
     // completed piles
     for (int i = 0; i < cfg.completedPileCount; i++) {

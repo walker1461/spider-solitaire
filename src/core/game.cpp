@@ -78,9 +78,13 @@ void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseD
     switch (state) {
         case GameState::GAME:
             updateDealing(deltaTime, piles[gameConfig.stockPileIndex]);
-            drag.update(mousePos, mouseDown, cards, piles, piles[gameConfig.stockPileIndex], deal);
+            updateAutoComplete(deltaTime);
+            drag.update(mousePos, mouseDown, cards, piles, piles[gameConfig.stockPileIndex], deal, autoState, deltaTime);
             updateCardPositions(cards, piles);
             if (rules) rules->darkenCards(cards, piles);
+            if (rules->checkForWin(piles)) {
+                hasWon = true;
+            }
             break;
         default:
             break;
@@ -134,4 +138,27 @@ void Game::updateDealing(const float deltaTime, Pile& stock) {
     piles[deal.nextPile].cardIndices.push_back(cardIndex);
 
     deal.nextPile++;
+}
+
+void Game::updateAutoComplete(const float deltaTime) {
+    if (!autoState.active) return;
+
+    autoState.timer += deltaTime;
+    if (autoState.timer < autoState.delay) return;
+    autoState.timer = 0.0f;
+
+    if (autoState.cardIndices.empty()) {
+        autoState.active = false;
+        return;
+    }
+
+    const int cardIndex = autoState.cardIndices.front();
+    autoState.cardIndices.erase(autoState.cardIndices.begin());
+
+    Card& card = cards[cardIndex];
+    card.pileIndex = autoState.toPile;
+    card.targetPosition = piles[autoState.toPile].basePosition;
+
+    auto& destIndices = piles[autoState.toPile].cardIndices;
+    destIndices.insert(destIndices.begin(), cardIndex);
 }
