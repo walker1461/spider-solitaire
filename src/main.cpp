@@ -7,7 +7,6 @@
 #include "render/render.h"
 
 #include <random>
-#include <iostream>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -42,8 +41,8 @@ void showMenu(GameState& gameState, Difficulty& difficulty) {
 
     ImGui::PushFont(ImGui::GetFont());
 
-	float textWidth = ImGui::CalcTextSize("Spider Solitaire").x;
-	float windowWidth = ImGui::GetWindowSize().x;
+	const float textWidth = ImGui::CalcTextSize("Spider Solitaire").x;
+	const float windowWidth = ImGui::GetWindowSize().x;
 	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
 
 	ImGui::Text("Spider Solitaire");
@@ -103,6 +102,7 @@ int main() {
     Difficulty difficulty = Normal;
 
     static auto lastTime = static_cast<float>(glfwGetTime());
+    constexpr float menuCoolDown = 0.1f;
 
     // ----------- GAME LOOP -----------
     while (!glfwWindowShouldClose(window)) {
@@ -113,10 +113,14 @@ int main() {
 
     	int window_width, window_height;
     	glfwGetFramebufferSize(window, &window_width, &window_height);
+    	int screen_width, screen_height;
+    	glfwGetWindowSize(window, &screen_width, &screen_height);
 
     	const auto currentTime = static_cast<float>(glfwGetTime());
     	const float deltaTime = currentTime - lastTime;
     	lastTime = currentTime;
+    	static float lastEscPress{};
+    	const float escDeltaTime = currentTime - lastEscPress;
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -128,29 +132,73 @@ int main() {
         glfwGetCursorPos(window, &mouseX, &mouseY);
         const bool mouseDown = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
         InputState input{
-            .mouseWorld = screenToWorld(mouseX, mouseY, window_width, window_height),
+            .mouseWorld = screenToWorld(mouseX, mouseY, screen_width, screen_height),
             .mouseDown = mouseDown,
             .mouseLeftPressed = mouseDown && !lastMouseDown,
             .mouseLeftReleased = !mouseDown && lastMouseDown
         };
         lastMouseDown = mouseDown;
 
+    	// ----------- PAUSE MENU ---------------
+		static bool isPaused = false;
+    	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    		lastEscPress = currentTime;
+    		if (escDeltaTime > menuCoolDown && game.state != MENU) isPaused = !isPaused;
+    	}
+
+    	if (isPaused) {
+    		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    		ImGui::Begin("Paused", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+
+    		if (ImGui::Button("Resume", ImVec2(160, 30))) {
+    			isPaused = false;
+    		}
+    		if (ImGui::Button("Restart", ImVec2(160, 30))) {
+    			game.state = NEWGAME;
+    			isPaused = false;
+    		}
+    		if (ImGui::Button("Main Menu", ImVec2(160, 30))) {
+    			game.state = MENU;
+    			isPaused = false;
+    		}
+    		ImGui::End();
+    	}
+
+    	// ---------- YOU WIN SCREEN ------------
+		if (game.hasWon) {
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			ImGui::Begin("You win!!!", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+
+			if (ImGui::Button("Play Again", ImVec2(140, 25))) {
+				game.state = NEWGAME;
+				game.hasWon = false;
+			}
+			if (ImGui::Button("Main Menu", ImVec2(140, 25))) {
+				game.state = MENU;
+				game.hasWon = false;
+			}
+			ImGui::End();
+		}
+
         // ---------- STATE: NEW GAME -----------
         if (game.state == NEWGAME) {
             game.startNewGame(difficulty);
         }
 
-        // ---------- STATE: MENU -----------
+        // ----------- STATE: MENU ------------
         if (game.state == MENU) {
             showMenu(game.state, difficulty);
         }
 
         // ---------- STATE: GAME -----------
         if (game.state == GAME) {
-            game.update(deltaTime, input.mouseWorld, input.mouseDown);
-            renderer.beginFrame(window_width, window_height);
-            game.render(renderer);
-            Renderer::endFrame();
+        	if (!isPaused) {
+        		game.update(deltaTime, input.mouseWorld, input.mouseDown);
+        	}
+        	renderer.beginFrame(window_width, window_height);
+        	game.render(renderer);
+        	Renderer::endFrame();
+
         } else {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
