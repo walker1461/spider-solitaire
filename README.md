@@ -49,4 +49,4 @@ Future improvements for this project:
 
 ***
 
-Card textures from 
+Card textures from [Sylly](https://opengameart.org/users/sylly) under CC0.
