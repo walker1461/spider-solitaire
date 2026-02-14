@@ -2,13 +2,11 @@
 #include <GLFW/glfw3.h>
 
 #include "core/game.h"
-#include "input/card_drag.h"
 #include "input/input_state.h"
 #include "render/render.h"
 
 #include <random>
 
-#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
@@ -28,49 +26,6 @@ GLFWwindow* openGlInit(const float main_scale) {
     return window;
 };
 
-void showMenu(GameState& gameState, Difficulty& difficulty) {
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 20));
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 14.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));
-
-	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(300, 345));
-
-    ImGui::Begin("Main Menu", nullptr,
-                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
-    ImGui::PushFont(ImGui::GetFont());
-
-	const float textWidth = ImGui::CalcTextSize("Spider Solitaire").x;
-	const float windowWidth = ImGui::GetWindowSize().x;
-	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-
-	ImGui::Text("Spider Solitaire");
-	ImGui::PopFont();
-
-	ImGui::BeginChild("DifficultyBox", ImVec2(0, 160), true);
-	    ImGui::Text("Choose a difficulty:");
-		ImGui::Separator();
-		if (ImGui::RadioButton("Easy", difficulty == Easy)) difficulty = Easy;
-		if (ImGui::RadioButton("Normal", difficulty == Normal)) difficulty = Normal;
-		if (ImGui::RadioButton("Hard", difficulty == Hard)) difficulty = Hard;
-	ImGui::EndChild();
-
-	ImGui::Dummy(ImVec2(0, 10));
-	if (ImGui::Button("Play", ImVec2(-1, 40))) {
-		gameState = NEWGAME;
-	}
-
-	ImGui::Dummy(ImVec2(0, 5));
-	if (ImGui::Button("Quit", ImVec2(-1, 30))) {
-		gameState = QUIT;
-	}
-
-    ImGui::End();
-	ImGui::PopStyleVar(3);
-}
-
-
 int main() {
 
     // ---------- GET OPENGL WINDOW ----------
@@ -79,8 +34,7 @@ int main() {
     GLFWwindow* window = openGlInit(main_scale);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) return -1;
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // --------- SETUP DEAR IMGUI CONTEXT
@@ -99,12 +53,14 @@ int main() {
     renderer.init();
 
     Game game;
-    Difficulty difficulty = Normal;
 
     static auto lastTime = static_cast<float>(glfwGetTime());
 
     // ----------- GAME LOOP -----------
     while (!glfwWindowShouldClose(window)) {
+    	glEnable(GL_BLEND);
+    	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glfwPollEvents();
 
         if (game.state == QUIT)
@@ -118,8 +74,6 @@ int main() {
     	const auto currentTime = static_cast<float>(glfwGetTime());
     	const float deltaTime = currentTime - lastTime;
     	lastTime = currentTime;
-    	static float lastEscPress{};
-    	const float escDeltaTime = currentTime - lastEscPress;
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -138,67 +92,26 @@ int main() {
         };
         lastMouseDown = mouseDown;
 
-    	// ----------- PAUSE MENU ---------------
-		static bool isPaused = false;
-    	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    		lastEscPress = currentTime;
-    		if (escDeltaTime > 0.1f && game.state != MENU) isPaused = !isPaused;
-    	}
 
-    	if (isPaused) {
-    		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-    		ImGui::Begin("Paused", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+        game.update(deltaTime, input.mouseWorld, input.mouseDown, window);
 
-    		if (ImGui::Button("Resume", ImVec2(160, 30))) {
-    			isPaused = false;
-    		}
-    		if (ImGui::Button("Restart", ImVec2(160, 30))) {
-    			game.state = NEWGAME;
-    			isPaused = false;
-    		}
-    		if (ImGui::Button("Main Menu", ImVec2(160, 30))) {
-    			game.state = MENU;
-    			isPaused = false;
-    		}
+        renderer.beginFrame(window_width, window_height);
+    	renderer.render(game);
+        Renderer::endFrame();
+
+        // game score
+    	if (game.state == GameState::GAME) {
+    		std::string scoreText = "Score: " + std::to_string(game.score);
+    		const float textWidth = ImGui::CalcTextSize(scoreText.c_str()).x;
+
+    		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+    		ImGui::SetNextWindowSize(ImVec2(textWidth + 18.0f, 20));
+
+    		ImGui::Begin("##score", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoInputs);
+    		ImGui::Text("%s", scoreText.c_str());
     		ImGui::End();
     	}
-
-    	// ---------- YOU WIN SCREEN ------------
-		if (game.hasWon) {
-			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-			ImGui::Begin("You win!!!", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
-
-			if (ImGui::Button("Play Again", ImVec2(140, 25))) {
-				game.state = NEWGAME;
-				game.hasWon = false;
-			}
-			if (ImGui::Button("Main Menu", ImVec2(140, 25))) {
-				game.state = MENU;
-				game.hasWon = false;
-			}
-			ImGui::End();
-		}
-
-        // ---------- STATE: NEW GAME -----------
-        if (game.state == NEWGAME) {
-            game.startNewGame(difficulty);
-        }
-
-        // ----------- STATE: MENU ------------
-        if (game.state == MENU) {
-            showMenu(game.state, difficulty);
-        }
-
-        // ---------- STATE: GAME -----------
-        if (game.state == GAME) {
-        	if (!isPaused) {
-        		game.update(deltaTime, input.mouseWorld, input.mouseDown);
-        	}
-        	renderer.beginFrame(window_width, window_height);
-        	game.render(renderer);
-        	Renderer::endFrame();
-
-        } else {
+    	else {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
         }
