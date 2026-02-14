@@ -1,8 +1,7 @@
 #pragma once
-#include "../math/vectors.h"
+#include <filesystem>
 #include <vector>
-#include <string>
-#include "glad/glad.h"
+#include "../math/vectors.h"
 
 enum class Suit {
     Spades,
@@ -18,8 +17,8 @@ struct Card {
 
     Vec2 targetPosition;
     Vec2 visualPosition;
-    Vec2 size;
 
+    Vec2 size;
     float scale;
     float cornerRadius;
 
@@ -30,11 +29,16 @@ struct Card {
     int pileIndex;
     int indexInPile;
 
-    GLuint textureID;
+    Vec2 velocity{0.0f, 0.0f};
+    float rotation = 0.0f;
+    float alpha = 1.0f;
+    bool isFlying = false;
+
+    bool isActive = true;
     bool isDark;
 };
 
 inline const char* suitToString(Suit suit);
 
-std::string getCardTexture(Suit suit, int rank);
-std::vector<Card> generateDeck(int suitCount);
+std::filesystem::path getCardTexturePath(Suit suit, int rank);
+std::vector<Card> generateDeck(int numToGenerate);
