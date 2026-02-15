@@ -1,18 +1,13 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "../model/card.h"
-#include "../model/pile.h"
-#include "../model/dealState.h"
+#include <GLFW/glfw3.h>
 #include "../input/card_drag.h"
-#include "../core/game_config.h"
-#include "../model/autoState.h"
-
-class Renderer;
 
 enum GameState {
     NEWGAME,
     MENU,
+    PAUSED,
     GAME,
     WINNER,
     QUIT
@@ -26,26 +21,31 @@ enum Difficulty {
 
 struct Game {
 
-    Pile& initializeGame(std::vector<Card> &deck, std::vector<Pile> &cardPiles) const;
+    Pile& initializeGame(std::vector<Card>& cards, std::vector<Pile>& cardPiles) const;
     void startNewGame(Difficulty difficulty);
-    void update(float deltaTime, const Vec2& mousePos, bool mouseDown);
-    void render(const Renderer& renderer);
+    void update(float deltaTime, const Vec2& mousePos, bool mouseDown, GLFWwindow* window);
 
     GameState state = GameState::MENU;
+    Difficulty difficulty = Difficulty::Normal;
 
     std::vector<Card> cards;
     std::vector<Pile> piles;
+    std::vector<int> pileWarnings{};
     DealState deal;
-    AutoState autoState;
+
     std::unique_ptr<GameRules> rules;
     DragController drag;
-
     GameConfig gameConfig;
+
     bool hasWon = false;
+    bool isPaused = false;
+    int score = 0;
 
     void startDealing();
     void updateDealing(float deltaTime, Pile& stock);
-    void updateAutoComplete(float deltaTime);
+    void updateRunClearAnimation(float deltaTime);
+    void cleanupInactiveCards();
+    void refillStock();
 };
 
 void shuffleDeck(std::vector<Card> &cards);

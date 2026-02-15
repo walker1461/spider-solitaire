@@ -4,28 +4,32 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
+#include <iostream>
 #include <memory>
+#include <GLFW/glfw3.h>
 
-#include "../render/render.h"
+#include "imgui.h"
 #include "../rules/spider_rules.h"
+#include "ui/main_menu.h"
+#include "ui/pause_menu.h"
 
 constexpr float CARD_HEIGHT = 0.3f;
 constexpr float CARD_WIDTH = CARD_HEIGHT * 0.73f;
 
-Pile& Game::initializeGame(std::vector<Card> &deck, std::vector<Pile> &cardPiles) const {
+Pile& Game::initializeGame(std::vector<Card>& cards, std::vector<Pile>& cardPiles) const {
     // ---------- INITIAL DEAL -----------
-    shuffleDeck(deck);
+    shuffleDeck(cards);
     int cardCursor = 0;
 
     for (int i = 0; i < this->gameConfig.tableauCount; i++) {
         const int count = (i < 4) ? 6 : 5;
         for (int j = 0; j < count; j++) {
             cardPiles[i].cardIndices.push_back(cardCursor);
-            deck[cardCursor].size = {CARD_WIDTH, CARD_HEIGHT};
-            deck[cardCursor].pileIndex = i;
-            deck[cardCursor].indexInPile = j;
-            deck[cardCursor].faceUp = (j == count - 1);
-            deck[cardCursor].visualPosition = deck[cardCursor].targetPosition;
+            cards[cardCursor].size = {CARD_WIDTH, CARD_HEIGHT};
+            cards[cardCursor].pileIndex = i;
+            cards[cardCursor].indexInPile = j;
+            cards[cardCursor].faceUp = (j == count - 1);
+            cards[cardCursor].visualPosition = cards[cardCursor].targetPosition;
             cardCursor++;
         }
     }
@@ -35,11 +39,11 @@ Pile& Game::initializeGame(std::vector<Card> &deck, std::vector<Pile> &cardPiles
     Pile& stock = cardPiles.back();
     stock.type = PileType::Stock;
 
-    while (cardCursor < static_cast<int>(deck.size())) {
+    while (cardCursor < static_cast<int>(this->cards.size())) {
         stock.cardIndices.push_back(cardCursor);
 
-        deck[cardCursor].size = gameConfig.cardSize;
-        deck[cardCursor].faceUp = false;
+        cards[cardCursor].size = gameConfig.cardSize;
+        cards[cardCursor].faceUp = false;
         cardCursor++;
     }
 
@@ -56,16 +60,19 @@ Pile& Game::initializeGame(std::vector<Card> &deck, std::vector<Pile> &cardPiles
 }
 
 void Game::startNewGame(const Difficulty difficulty) {
-    const int suitCount = (difficulty == Easy) ? 1 : (difficulty == Normal) ? 2 : 4;
-    cards = generateDeck(suitCount);
+    this->difficulty = difficulty;
+    //const int suitCount = (difficulty == Easy) ? 1 : (difficulty == Normal) ? 2 : 4;
+    //cards = generateDeck(suitCount);
+    this->cards = generateDeck(8);
 
     rules = std::make_unique<SpiderRules>();
     gameConfig = rules->config();
 
     piles.clear();
     piles.resize(gameConfig.tableauCount);
+    score = 0;
 
-    initializeGame(cards, piles);
+    initializeGame(this->cards, piles);
     layoutPiles(piles, gameConfig);
 
     drag.setRules(rules.get());
@@ -74,30 +81,82 @@ void Game::startNewGame(const Difficulty difficulty) {
     state = GameState::GAME;
 }
 
-void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseDown) {
+void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseDown, GLFWwindow* window) {
+    // check for escape button press
+    static float lastEscPress{};
+    const float escDeltaTime = static_cast<float>(glfwGetTime()) - lastEscPress;
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        lastEscPress = static_cast<float>(glfwGetTime());
+        if (escDeltaTime > 0.1f && state != GameState::MENU) isPaused = !isPaused;
+        if (isPaused) {
+            state = GameState::PAUSED;
+        } else {
+            state = GameState::GAME;
+        }
+    }
+
+    DropResult result;
+
     switch (state) {
-        case GameState::GAME:
+        case GameState::GAME: {
             updateDealing(deltaTime, piles[gameConfig.stockPileIndex]);
-            updateAutoComplete(deltaTime);
-            drag.update(mousePos, mouseDown, cards, piles, piles[gameConfig.stockPileIndex], deal, autoState, deltaTime);
-            updateCardPositions(cards, piles);
-            if (rules) rules->darkenCards(cards, piles);
-            if (rules->checkForWin(piles)) {
-                hasWon = true;
+            auto dropEvent = drag.update(mousePos, mouseDown, this->cards, piles,
+                                        piles[gameConfig.stockPileIndex], deal, deltaTime);
+            if (dropEvent) {
+                result = rules->onDrop(cards, piles, dropEvent->fromPile, dropEvent->toPile, dropEvent->startIndex);
+                if (result.runCleared) {
+                    score += 100;
+                }
             }
+
+            updateCardPositions(this->cards, piles);
+            updateRunClearAnimation(deltaTime);
+
+            rules->checkPileSizes(piles);
+
+            if (rules) rules->darkenCards(this->cards, piles);
             break;
-        default:
+        }
+        case GameState::MENU: {
+            showMenu(state, difficulty);
             break;
+        }
+        case GameState::PAUSED: {
+            drawPauseBackground();
+            showPauseMenu(state, isPaused);
+            break;
+        }
+        case GameState::NEWGAME: {
+            startNewGame(difficulty);
+            state = GameState::GAME;
+            break;
+        }
+        case GameState::WINNER: {
+            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+            ImGui::Begin("You win!!!", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+
+            if (ImGui::Button("Play Again", ImVec2(140, 25))) {
+                state = GameState::NEWGAME;
+                hasWon = false;
+            }
+            if (ImGui::Button("Main Menu", ImVec2(140, 25))) {
+                state = GameState::MENU;
+                hasWon = false;
+            }
+            ImGui::End();
+            break;
+        }
+        case GameState::QUIT: {
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 
-void Game::render(const Renderer& renderer) {
-    renderer.drawSpider();
-    renderer.drawPiles(piles, gameConfig.cardSize);
-    renderer.drawCards(cards);
-}
-
-void shuffleDeck(std::vector<Card> &cards) {
+void shuffleDeck(std::vector<Card>& cards) {
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
 }
@@ -138,27 +197,89 @@ void Game::updateDealing(const float deltaTime, Pile& stock) {
     piles[deal.nextPile].cardIndices.push_back(cardIndex);
 
     deal.nextPile++;
+
+    //check if stock pile needs refilling
+    if (piles[gameConfig.stockPileIndex].cardIndices.size() < gameConfig.tableauCount) {
+        refillStock();
+    }
 }
 
-void Game::updateAutoComplete(const float deltaTime) {
-    if (!autoState.active) return;
+void Game::updateRunClearAnimation(const float deltaTime) {
+    for (Card& card : cards) {
+        if (!card.isFlying) continue;
 
-    autoState.timer += deltaTime;
-    if (autoState.timer < autoState.delay) return;
-    autoState.timer = 0.0f;
+        card.flyTimer += deltaTime;
 
-    if (autoState.cardIndices.empty()) {
-        autoState.active = false;
-        return;
+        float t = card.flyTimer / card.flyDuration;
+        if (t > 1.0f) t = 1.0f;
+
+        // cubic ease
+        const float ease = 1.0f - pow(1.0f - t, 3.0f);
+
+        card.visualPosition =
+            card.flyStart +
+            (card.flyTarget - card.flyStart) * ease;
+
+        card.rotation += ((6.28318f * deltaTime) - t);
+
+        // fade only near end
+        float fadeStart = 0.7f;
+
+        if (t < fadeStart) {
+            card.alpha = 1.0f;
+        } else {
+            float fadeT = (t - fadeStart) / (1.0f - fadeStart);
+            card.alpha = 1.0f - fadeT;
+        }
+
+        if (t >= 1.0f) {
+            card.isFlying = false;
+            card.alpha = 0.0f;
+            card.isActive = false;
+            card.pileIndex = -1;
+            card.indexInPile = -1;
+        }
     }
+    cleanupInactiveCards();
+}
 
-    const int cardIndex = autoState.cardIndices.front();
-    autoState.cardIndices.erase(autoState.cardIndices.begin());
+void Game::cleanupInactiveCards() {
+    for (auto& pile : piles) {
+        pile.cardIndices.erase(
+            std::remove_if(
+                pile.cardIndices.begin(),
+                pile.cardIndices.end(),
+                [&](const int index) {
+                    return !cards[index].isActive;
+                }),
+            pile.cardIndices.end()
+        );
+    }
+}
 
-    Card& card = cards[cardIndex];
-    card.pileIndex = autoState.toPile;
-    card.targetPosition = piles[autoState.toPile].basePosition;
+void Game::refillStock() {
+    std::cout << "REFILL CALLED\n";
 
-    auto& destIndices = piles[autoState.toPile].cardIndices;
-    destIndices.insert(destIndices.begin(), cardIndex);
+    std::vector<Card> newCards = generateDeck(8);
+    shuffleDeck(newCards);
+
+    Pile& stock = piles[gameConfig.stockPileIndex];
+
+    for (auto& newCard : newCards) {
+        int newIndex = static_cast<int>(cards.size());
+
+        cards.push_back(newCard);
+
+        Card& card = cards[newIndex];
+
+        card.faceUp = false;
+        card.pileIndex = gameConfig.stockPileIndex;
+        card.indexInPile = static_cast<int>(stock.cardIndices.size());
+        card.size = gameConfig.cardSize;
+        card.visualPosition = stock.basePosition;
+        card.targetPosition = stock.basePosition;
+
+        stock.cardIndices.push_back(newIndex);
+    }
+    std::cout << piles[gameConfig.stockPileIndex].cardIndices.size() << std::endl;
 }

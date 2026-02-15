@@ -33,6 +33,11 @@ struct Card {
     float rotation = 0.0f;
     float alpha = 1.0f;
     bool isFlying = false;
+    float flyTimer = 0.0f;
+    float flyDuration = 1.5f;
+    Vec2 flyStart;
+    Vec2 flyTarget;
+
 
     bool isActive = true;
     bool isDark;
