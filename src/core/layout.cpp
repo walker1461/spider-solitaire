@@ -4,37 +4,42 @@ constexpr float TABLEAU_BOTTOM = -0.9f;
 constexpr float VIRTUAL_WIDTH = 2.0f;
 constexpr float VIRTUAL_HEIGHT = 2.0f;
 
-void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& piles) {
+void updateCardPositions(std::vector<Card>& cards, std::vector<Pile>& piles) {
     for (int p = 0; p < static_cast<int>(piles.size()); p++) {
-        const Pile& pile = piles[p];
+        Pile& pile = piles[p];
 
         constexpr float baseSpacing = 0.07f;
         float spacing = baseSpacing;
         constexpr float faceDownBaseSpacing = 0.04f;
         float faceDownSpacing = faceDownBaseSpacing;
+        constexpr float maxHeight = 1.25f;
 
-        if (constexpr float maxHeight = 1.25f; static_cast<float>(pile.cardIndices.size()) * spacing > maxHeight) {
-            spacing = maxHeight / static_cast<float>(pile.cardIndices.size());
-            faceDownSpacing = (maxHeight / static_cast<float>(pile.cardIndices.size())) - 0.03f;
+        int cardCount = static_cast<int>(pile.cardIndices.size());
+
+        if (cardCount * spacing > maxHeight && cardCount > 0) {
+            spacing = maxHeight / static_cast<float>(cardCount);
+            //faceDownSpacing = (maxHeight / static_cast<float>(pile.cardIndices.size())) - 0.03f;
+            faceDownSpacing = spacing - 0.03f;
         }
 
         //get last face down card
-        int lastFaceDownIndex{-1};
-        for (const int cardIndex : pile.cardIndices) {
-            if (!cards[cardIndex].faceUp) {
-                lastFaceDownIndex = cards[cardIndex].indexInPile;
+        int lastFaceDownIndex = -1;
+        for (int i = 0; i < cardCount; i++) {
+            int idx = pile.cardIndices[i];
+            if (!cards[idx].faceUp) {
+                lastFaceDownIndex = i;
             } else {
                 break;
             }
         }
 
         float const faceDownOffset = (static_cast<float>(lastFaceDownIndex) + 1) * (spacing - faceDownSpacing);
-
         const bool isTableau = (pile.type != PileType::Stock && pile.type != PileType::Completed);
+        float bottomY = pile.basePosition.y;
 
-        for (int i = 0; i < static_cast<int>(pile.cardIndices.size()); ++i) {
-            const int cardIndex = pile.cardIndices[i];
-            if (cardIndex < 0 || cardIndex >= static_cast<int>(cards.size())) continue;
+        for (int i = 0; i < cardCount; ++i) {
+            int cardIndex = pile.cardIndices[i];
+            if (cardIndex < 0 || cardIndex >= cards.size()) continue;
 
             Card& card = cards[cardIndex];
 
@@ -54,9 +59,20 @@ void updateCardPositions(std::vector<Card>& cards, const std::vector<Pile>& pile
                     card.targetPosition.y = pile.basePosition.y - (static_cast<float>(i) * spacing) + faceDownOffset;
                 }
 
+                if (i == cardCount - 1) {
+                    bottomY = card.targetPosition.y;
+                }
+
             } else {
                 card.targetPosition = pile.basePosition;
             }
+        }
+
+        if (isTableau && cardCount > 1) {
+            float cardHeight = 0.3f;
+            pile.visualHeight = (pile.basePosition.y - bottomY) + cardHeight;
+        } else {
+            pile.visualHeight = 0.3f;
         }
     }
 };
