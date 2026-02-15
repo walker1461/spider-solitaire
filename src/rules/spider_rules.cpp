@@ -1,8 +1,11 @@
 #include "spider_rules.h"
+
+#include <cmath>
+#include <iostream>
+
 #include "run_rules.h"
 #include "../model/pile.h"
 #include "../core/move_system.h"
-#include "../model/autoState.h"
 
 namespace {
     constexpr GameConfig kSpiderConfig{
@@ -11,6 +14,7 @@ namespace {
         .stockPileIndex = 10,
         .firstCompletedPileIndex = 11,
         .completedPileCount = 8,
+        .maxPileSize = 18,
         .cardSize = {0.22f, 0.3f},
     };
 
@@ -29,40 +33,60 @@ namespace {
         return true;
     }
 
-    void autoComplete(std::vector<Card>& cards, std::vector<Pile>& piles, const GameConfig& cfg, const int fromPile,
-                      const std::vector<int>& draggingRun, const int draggingStartIndex, AutoState& autoState) {
-        int toPile = -1;
+    void startRunClearAnimation(std::vector<Card>& cards, const std::vector<int>& completeRun,
+        std::vector<Pile>& piles, const int toPile)
+    {
+        Pile& source = piles[toPile];
 
-        const int start = cfg.firstCompletedPileIndex;
-        const int end = start + cfg.completedPileCount;
+        // remove the run from the pile
+        int runSize = static_cast<int>(completeRun.size());
 
-        for (int i = start; i < end; i++) {
-            if (piles[i].type == PileType::Completed && piles[i].cardIndices.empty()) {
-                toPile = i;
-                break;
-            }
+        if (source.cardIndices.size() >= runSize) {
+            source.cardIndices.erase(
+                source.cardIndices.end() - runSize,
+                source.cardIndices.end()
+            );
+        }
+        else {
+            std::cout << "ERROR: run larger than pile\n";
+            return;
         }
 
-        if (toPile == -1) return;
+        // reindex remaining cards in pile
+        for (int i = 0; i < source.cardIndices.size(); i++) {
+            cards[source.cardIndices[i]].indexInPile = i;
+        }
 
-        autoState.active = true;
-        autoState.timer = 0.0f;
-        autoState.fromPile = fromPile;
-        autoState.toPile = toPile;
-        autoState.cardIndices = draggingRun;
-
-        Pile& source = piles[fromPile];
-        source.cardIndices.erase(source.cardIndices.begin() + draggingStartIndex, source.cardIndices.end());
+        // flip the new top card face up if needed
         if (!source.cardIndices.empty()) {
             cards[source.cardIndices.back()].faceUp = true;
         }
 
-        static int nextAutoLiftGroupId = 200000;
-        int const groupId = nextAutoLiftGroupId++;
+        // start animation on cleared cards
+        for (const int cardIndex : completeRun) {
+            Card& card = cards[cardIndex];
 
-        for (const int cardIndex : draggingRun) {
-            cards[cardIndex].isLifted = true;
-            cards[cardIndex].liftGroupId = groupId;
+            card.isFlying = true;
+            card.alpha = 1.0f;
+            card.flyTimer = 0.0f;
+            card.flyDuration = 1.5f;
+            card.flyStart = card.visualPosition;
+
+            card.velocity = {
+                ((rand() % 1000) / 1000.0f - 0.5f) * 2.5f,
+                1.0f + ((rand() % 1000) / 1000.0f)
+            };
+
+            const float angle = ((rand() % 1000) / 1000.0f) * 6.28318f; // 0–2π
+            const float speed = 1.5f + ((rand() % 1000) / 1000.0f) * 1.5f;
+
+            const Vec2 dir = { cos(angle), sin(angle) };
+
+            card.flyTarget = {
+                card.visualPosition.x + dir.x * speed,
+                card.visualPosition.y + dir.y * speed
+            };
+
         }
     }
 }
@@ -71,17 +95,22 @@ GameConfig SpiderRules::config() const {
     return kSpiderConfig;
 }
 
-void SpiderRules::onDrop(std::vector<Card> &cards, std::vector<Pile> &piles, const int fromPile,
-                         const int toPile, const int startIndex, AutoState& autoState, float deltaTime) {
+DropResult SpiderRules::onDrop(std::vector<Card> &cards, std::vector<Pile> &piles, const int fromPile,
+                         const int toPile, const int startIndex) {
     moveRun(cards, piles, fromPile, toPile, startIndex);
+
+    DropResult result;
 
     if (const Pile& destination = piles[toPile]; isCompleteRun(cards, destination)) {
         std::vector<int> completeRun;
         for (int i = static_cast<int>(destination.cardIndices.size() - 1); i >= static_cast<int>(destination.cardIndices.size() - 13); i--) {
             completeRun.push_back(destination.cardIndices[i]);
         }
-        autoComplete(cards, piles, kSpiderConfig, toPile, completeRun, static_cast<int>(destination.cardIndices.size() - 13), autoState);
+        startRunClearAnimation(cards, completeRun, piles, toPile);
+        result.runCleared = true;
+        result.runsCleared = 1;
     }
+    return result;
 }
 
 bool canDropRun(const std::vector<Card>& cards, const Pile& destination, const int movingCardIndex) {
@@ -109,9 +138,9 @@ bool SpiderRules::canDeal(const std::vector<Pile> &piles, const int stockPile,
 
     if (piles[stockPile].cardIndices.size() < tableauCount) return false;
 
-    for (int i = 0; i < tableauCount; i++) {
-        if (piles[firstTableau + i].cardIndices.empty()) return false;
-    }
+    // for (int i = 0; i < tableauCount; i++) {
+    //     if (piles[firstTableau + i].cardIndices.empty()) return false;
+    // }
 
     return true;
 }
@@ -127,6 +156,16 @@ void SpiderRules::deal(std::vector<Card> &cards, std::vector<Pile> &piles){
 
         piles[firstTableau + i].cardIndices.push_back(card);
         cards[card].faceUp = true;
+    }
+}
+
+void SpiderRules::checkPileSizes(std::vector<Pile>& piles) {
+    for (int i = 0; i < kSpiderConfig.tableauCount; i++) {
+        if (piles[i].cardIndices.size() > kSpiderConfig.maxPileSize) {
+            piles[i].tooTall = true;
+        } else {
+            piles[i].tooTall = false;
+        }
     }
 }
 
