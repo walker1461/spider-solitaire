@@ -14,4 +14,6 @@ struct Pile {
     std::vector<int> cardIndices;
     int maxCards = -1;
     bool fanDown = true;
+    bool tooTall = false;
+    float visualHeight = 0.0f;
 };
