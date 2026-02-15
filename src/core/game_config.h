@@ -7,5 +7,6 @@ struct GameConfig {
     int stockPileIndex{};
     int firstCompletedPileIndex{};
     int completedPileCount{};
+    int maxPileSize{};g
     Vec2 cardSize{0.22f, 0.3f};
 };
