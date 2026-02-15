@@ -1,12 +1,14 @@
 #pragma once
+
 #include <vector>
-#include "../model/card.h"
+#include <optional>
+//#include "../model/card.h"
 #include "../model/dealState.h"
-#include "../model/autoState.h"
-#include "../math/vectors.h"
-#include "../model/pile.h"
+//#include "../model/autoState.h"
+//#include "../math/vectors.h"
+//#include "../model/pile.h"
 #include "../rules/game_rules.h"
-#include "../core/game_config.h"
+//#include "../core/game_config.h"
 
 Vec2 screenToWorld(double x, double y, int w, int h);
 
@@ -15,12 +17,18 @@ enum class DragState {
     Dragging
 };
 
+struct DropEvent {
+    int fromPile;
+    int toPile;
+    int startIndex;
+};
+
 class DragController {
 public:
     void setRules(GameRules* rules);
     void setConfig(const GameConfig* config);
 
-    void update(const Vec2& mousePos, bool mouseDown, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, DealState& dealState, AutoState& autoState, float deltaTime);
+    std::optional<DropEvent> update(const Vec2& mousePos, bool mouseDown, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, DealState& dealState, float deltaTime);
 private:
     GameRules* gameRules = nullptr;
     const GameConfig* gameConfig = nullptr;
@@ -33,6 +41,7 @@ private:
     bool wasMouseDown = false;
 
     void updateIdle(const Vec2& mousePos, bool justPressed, std::vector<Card>& cards, std::vector<Pile>& piles, const Pile& stock, DealState& dealState);
-    void updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, AutoState& autoState, float deltaTime);
+    std::optional<DropEvent> updateDragging(const Vec2& mousePos, bool mouseDown, bool justReleased, std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock, float deltaTime);
+    void revertDrag(std::vector<Card>& cards);
     void updateDealing(std::vector<Card>& cards, std::vector<Pile>& piles, Pile& stock);
 };

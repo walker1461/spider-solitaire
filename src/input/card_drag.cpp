@@ -66,7 +66,7 @@ void DragController::updateIdle(const Vec2 &mousePos, const bool justPressed, st
     }
 }
 
-void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, const bool justReleased, std::vector<Card> &cards, std::vector<Pile> &piles, Pile &stock, AutoState& autoState, float deltaTime) {
+std::optional<DropEvent> DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, const bool justReleased, std::vector<Card> &cards, std::vector<Pile> &piles, Pile &stock, float deltaTime) {
     if (mouseDown) {
         auto [x, y] = mousePos - dragOffset;
         for (int i = 0; i < draggingRun.size(); i++) {
@@ -100,46 +100,75 @@ void DragController::updateDragging(const Vec2 &mousePos, const bool mouseDown, 
 
         if (targetPile != -1 && gameRules != nullptr) {
             const int movingCardIndex = piles[draggingPile].cardIndices[draggingStartIndex];
+
             if (gameRules->canDrop(cards, piles[draggingPile], piles[targetPile], movingCardIndex)) {
-                gameRules->onDrop(cards, piles, draggingPile, targetPile, draggingStartIndex, autoState, deltaTime);
+                const std::optional<DropEvent> dropEvent = DropEvent{ draggingPile, targetPile, draggingStartIndex};
+
+                for (const int idx : draggingRun) {
+                    Card& c = cards[idx];
+                    c.isDragging = false;
+                    c.isLifted = true;
+                    c.scale = 1.0f;
+                }
+
+                draggingRun.clear();
+                draggingPile = -1;
+                draggingStartIndex = -1;
+                state = DragState::Idle;
+
+                return dropEvent;
+            } else {
+                revertDrag(cards);
             }
+        } else {
+            revertDrag(cards);
         }
-
-        for (const int idx : draggingRun) {
-            Card& c = cards[idx];
-            c.isDragging = false;
-            c.isLifted = true;
-            c.scale = 1.0f;
-        }
-
-        draggingRun.clear();
-        draggingPile = -1;
-        draggingStartIndex = -1;
-        state = DragState::Idle;
     }
+    return std::nullopt;
 }
+
+void DragController::revertDrag(std::vector<Card>& cards) {
+    for (int i = 0; i < draggingRun.size(); i++) {
+        Card& c = cards[draggingRun[i]];
+
+        c.isDragging = false;
+        c.isLifted = true;
+        c.scale = 1.0f;
+
+        //c.pileIndex = draggingPile;
+    }
+
+    draggingRun.clear();
+    draggingPile = -1;
+    draggingStartIndex = -1;
+    state = DragState::Idle;
+}
+
 
 void DragController::updateDealing(std::vector<Card> &cards, std::vector<Pile> &piles, Pile &stock) {
     state = DragState::Idle;
 }
 
-void DragController::update(const Vec2& mousePos, const bool mouseDown,
+std::optional<DropEvent> DragController::update(const Vec2& mousePos, const bool mouseDown,
                             std::vector<Card>& cards, std::vector<Pile>& piles,
-                            Pile& stock, DealState& dealState, AutoState& autoState, float deltaTime) {
-    if (dealState.active || autoState.active) {
+                            Pile& stock, DealState& dealState, float deltaTime) {
+    if (dealState.active) {
         wasMouseDown = mouseDown;
-        return;
+        return std::nullopt;
     }
     const bool justPressed = mouseDown && !wasMouseDown;
     const bool justReleased = !mouseDown && wasMouseDown;
+
+    std::optional<DropEvent> result = std::nullopt;
 
     switch (state) {
         case DragState::Idle:
             updateIdle(mousePos, justPressed, cards, piles, stock, dealState);
             break;
         case DragState::Dragging:
-            updateDragging(mousePos, mouseDown, justReleased, cards, piles, stock, autoState, deltaTime);
+            result = updateDragging(mousePos, mouseDown, justReleased, cards, piles, stock, deltaTime);
             break;
     }
     wasMouseDown = mouseDown;
+    return result;
 }
