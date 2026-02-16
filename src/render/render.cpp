@@ -11,7 +11,17 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <fstream>
+#include <sstream>
+
 static std::unordered_map<std::string, GLuint> textureCache;
+
+std::string importShader(const std::string& path) {
+    std::ifstream file(path);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
 
 unsigned int createCardVAO() {
     unsigned int VBO, VAO;
@@ -33,73 +43,11 @@ unsigned int createCardVAO() {
 };
 
 unsigned int createShaderProgram() {
-    const auto vertexShaderSource = R"(
-        #version 330 core
-        layout (location = 0) in vec3 aPos;
-        layout (location = 1) in vec2 aTexCoord;
+    const std::string vertexShaderSource = importShader("assets/shaders/vertexShader.glsl");
+    const std::string fragmentShaderSource = importShader("assets/shaders/fragShader.glsl");
 
-        uniform vec2 offset;
-        uniform vec2 uSize;
-        uniform float uScale;
-        uniform float uRotation;
-        uniform vec2 uAspect;
-
-        out vec2 TexCoords;
-        out vec2 localPos;
-
-        void main() {
-            localPos = aPos.xy * uSize * uScale;
-
-            float s = sin(uRotation);
-            float c = cos(uRotation);
-            mat2 rot = mat2(c, -s, s, c);
-
-            vec2 aspectPos = localPos;
-            float aspect = uAspect.x / uAspect.y;
-            aspectPos.x /= aspect;
-
-            aspectPos = rot * aspectPos;
-
-            gl_Position = vec4(aspectPos + offset, aPos.z, 1.0);
-            TexCoords = aTexCoord;
-        }
-    )";
-
-    const auto fragmentShaderSource = R"(
-        #version 330 core
-        in vec2 localPos;
-        in vec2 TexCoords;
-        out vec4 FragColor;
-
-        uniform sampler2D cardTexture;
-        uniform vec3 uColor;
-        uniform vec3 uTintColor;
-        uniform float uTintAmount;
-        uniform float radius;
-        uniform vec2 uSize;
-        uniform float uScale;
-        uniform float uAlpha;
-        uniform float uDimAmount;
-
-        void main() {
-            vec2 halfSize = 0.5 * uSize * uScale;
-            float r = radius * uScale;
-
-            vec2 p = abs(localPos);
-            vec2 q = p - halfSize + vec2(r);
-            float dist = length(max(q, 0.0));
-
-            vec4 texColor = texture(cardTexture, TexCoords);
-            vec3 baseColor = texColor.rgb * uDimAmount;
-            vec3 finalColor = mix(baseColor, uTintColor, uTintAmount);
-
-            if (dist > r) {
-                discard;
-            }
-
-            FragColor = vec4(finalColor, texColor.a * uAlpha);
-        }
-    )";
+    const char* vShaderCode = vertexShaderSource.c_str();
+    const char* fShaderCode = fragmentShaderSource.c_str();
 
     auto compileShader = [](const unsigned int type, const char* src) {
         unsigned int const shader = glCreateShader(type);
@@ -108,8 +56,8 @@ unsigned int createShaderProgram() {
         return shader;
     };
 
-    unsigned int const vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
-    unsigned int const fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    unsigned int const vertexShader = compileShader(GL_VERTEX_SHADER, vShaderCode);
+    unsigned int const fragmentShader = compileShader(GL_FRAGMENT_SHADER, fShaderCode);
 
     unsigned int const shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -220,7 +168,6 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
 
     // track which lift groups are done moving
     std::unordered_map<int, bool> liftGroupDone;
-    constexpr float EPSILON = 0.01f;
 
     std::unordered_set<int> glowDrawnForPile;
 
@@ -235,7 +182,7 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
 
             if (pile.type == PileType::Tableau)
             {
-                int cardCount = pile.cardIndices.size();
+                int cardCount = static_cast<int>(pile.cardIndices.size());
 
                 if (cardCount > 18)
                 {
@@ -276,7 +223,7 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
                         // Compute logical Y positions
                         const float baseY = pile.basePosition.y;
 
-                        auto computeY = [&](int indexInPile, bool faceUp) {
+                        auto computeY = [&](const int indexInPile, const bool faceUp) {
                             if (!faceUp) {
                                 return baseY - (static_cast<float>(indexInPile) * faceDownSpacing);
                             } else {
@@ -312,7 +259,7 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
                         const float pulse =
-                            0.6f + 0.4f * sin(glfwGetTime() * 2.5f);
+                            0.6f + 0.4f * static_cast<float>(sin(glfwGetTime() * 2.5f));
 
                         glUniform3f(tintColorLoc, 1.0f, 0.3f, 0.1f);
                         glUniform1f(tintAmountLoc, 0.8f);
@@ -351,7 +298,7 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
                 if (liftGroupDone.find(card.liftGroupId) == liftGroupDone.end()) {
                     liftGroupDone[card.liftGroupId] = true;
                 }
-                if (dist > EPSILON) {
+                if (constexpr float EPSILON = 0.01f; dist > EPSILON) {
                     liftGroupDone[card.liftGroupId] = false;
                 }
             }
@@ -374,7 +321,7 @@ void Renderer::endFrame() {
 }
 
 GLuint getCardTexture(const Card& card) {
-    std::string path = getCardTexturePath(card.suit, card.rank);
+    const std::string path = getCardTexturePath(card.suit, card.rank);
     if (textureCache.find(path) == textureCache.end()) {
         textureCache[path] = loadTexture(path.c_str());
     }
