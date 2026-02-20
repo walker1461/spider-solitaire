@@ -15,7 +15,9 @@ public:
 
     void checkPileSizes(std::vector<Pile> &piles) override;
 
-    bool checkForWin(std::vector<Pile> &piles) override;
+    bool checkForGameOver(std::vector<Pile> &piles, int maxPileSize) override;
+
+    //bool checkForWin(std::vector<Pile> &piles) override;
 
     void darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles) override;
 };

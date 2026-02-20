@@ -1,0 +1,9 @@
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/SpiderSolitaire.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/package.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/package_source.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/edit_cache.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/rebuild_cache.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/list_install_components.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/install.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/install/local.dir
+/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles/install/strip.dir

@@ -25,7 +25,9 @@ struct GameRules {
 
     virtual void checkPileSizes(std::vector<Pile>& piles) = 0;
 
-    virtual bool checkForWin(std::vector<Pile>& piles) = 0;
+    virtual bool checkForGameOver(std::vector<Pile>& piles, int maxPileSize) = 0;
+
+    //virtual bool checkForWin(std::vector<Pile>& piles) = 0;
 
     virtual ~GameRules() = default;
 };

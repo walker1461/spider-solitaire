@@ -42,7 +42,7 @@ Future improvements for this project:
     ```
 3.  Build the executable:
     ```bash
-    cmake --build build --target learnopengl
+    cmake --build build --target SpiderSolitaire
     ```
 
 *Note: You may need to adjust the `GLFW_ROOT` path in `CMakeLists.txt` to match your local environment.*

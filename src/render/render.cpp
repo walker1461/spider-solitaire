@@ -92,7 +92,9 @@ void Renderer::init() {
 };
 
 void Renderer::render(Game& game) const {
-    drawSpider();
+    if (game.state != GameState::MENU) {
+        drawSpider();
+    }
     drawPiles(game.piles, game.gameConfig.cardSize);
     drawCards(game.cards, game.piles);
 }
@@ -259,12 +261,13 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
                         const float pulse =
-                            0.6f + 0.4f * static_cast<float>(sin(glfwGetTime() * 2.5f));
+                            //0.6f + 0.4f * static_cast<float>(sin(glfwGetTime() * 2.5f));
+                              0.8f + 0.4f * static_cast<float>(sin(glfwGetTime() * 2.5f));
 
                         glUniform3f(tintColorLoc, 1.0f, 0.3f, 0.1f);
                         glUniform1f(tintAmountLoc, 0.8f);
                         glUniform1f(alphaLoc, 0.45f * pulse);
-                        glUniform1f(radiusLoc, 0.06f);
+                        glUniform1f(radiusLoc, 0.03f);
 
                         glUniform2f(offsetLoc,
                             pile.basePosition.x,
@@ -272,7 +275,7 @@ void Renderer::drawCards(std::vector<Card>& cards, std::vector<Pile>& piles) con
 
                         glUniform2f(sizeLoc,
                             card.size.x * 1.2f,
-                            height * 1.05f);
+                            height * 1.08f);
 
                         glDrawArrays(GL_TRIANGLES, 0, 6);
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

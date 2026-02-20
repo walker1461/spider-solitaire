@@ -14,7 +14,7 @@ namespace {
         .stockPileIndex = 10,
         .firstCompletedPileIndex = 11,
         .completedPileCount = 8,
-        .maxPileSize = 18,
+        .maxPileSize = -1,
         .cardSize = {0.22f, 0.3f},
     };
 
@@ -159,7 +159,7 @@ void SpiderRules::deal(std::vector<Card> &cards, std::vector<Pile> &piles){
     }
 }
 
-void SpiderRules::checkPileSizes(std::vector<Pile>& piles) {
+void SpiderRules::checkPileSizes(std::vector<Pile> &piles) {
     for (int i = 0; i < kSpiderConfig.tableauCount; i++) {
         if (piles[i].cardIndices.size() > kSpiderConfig.maxPileSize) {
             piles[i].tooTall = true;
@@ -169,15 +169,17 @@ void SpiderRules::checkPileSizes(std::vector<Pile>& piles) {
     }
 }
 
-bool SpiderRules::checkForWin(std::vector<Pile> &piles) {
-    for (int i = kSpiderConfig.firstCompletedPileIndex; i < kSpiderConfig.firstCompletedPileIndex + kSpiderConfig.completedPileCount; i++) {
-        if (piles[i].cardIndices.empty()) return false;
+bool SpiderRules::checkForGameOver(std::vector<Pile> &piles, int maxPileSize) {
+    for (const Pile &pile : piles) {
+        if (pile.cardIndices.size() > maxPileSize + 1 && pile.type == PileType::Tableau) {
+            return true;
+        }
     }
-    return true;
+    return false;
 }
 
-void SpiderRules::darkenCards(std::vector<Card>& cards, std::vector<Pile>& piles) {
-    for (Pile& pile : piles) {
+void SpiderRules::darkenCards(std::vector<Card> &cards, std::vector<Pile> &piles) {
+    for (Pile &pile : piles) {
         std::vector<int> const runToCheck;
         // completed piles and stock should not be darkened
         if (pile.type == PileType::Completed || pile.type == PileType::Stock) {

@@ -1,0 +1,367 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a3c8a69..a404a6c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,13 +6,37 @@ set(CMAKE_CXX_STANDARD 17)
+ add_executable(learnopengl
+     src/main.cpp
+     src/glad.c
+-        src/math.h
+-        src/card.h
+-        src/card.cpp
+-        src/render.h
+-        src/render.cpp
+-        src/card_drag.h
+-        src/card_drag.cpp
++    src/math/vectors.h
++    src/core/game.cpp
++    src/core/game.h
++    src/core/game_config.h
++    src/core/layout.cpp
++    src/core/layout.h
++    src/core/move_system.cpp
++    src/core/move_system.h
++    src/input/card_drag.cpp
++    src/input/card_drag.h
++    src/model/card.cpp
++    src/model/card.h
++    src/model/dealState.h
++    src/model/pile.h
++    src/render/cardVertices.h
++    src/render/render.cpp
++    src/render/render.h
++    src/render/shaders.h
++    src/rules/game_rules.h
++    src/rules/run_rules.cpp
++    src/rules/run_rules.h
++    src/rules/spider_rules.cpp
++    src/rules/spider_rules.h
++    src/ui/style.cpp
++    imgui/imgui.cpp
++    imgui/imgui_draw.cpp
++    imgui/imgui_widgets.cpp
++    imgui/imgui_tables.cpp
++    imgui/imgui_demo.cpp
++    imgui/backends/imgui_impl_glfw.cpp
++    imgui/backends/imgui_impl_opengl3.cpp
+ )
+ 
+ set(GLFW_ROOT /Users/walkerimmel/programming/glfw-3.4)
+@@ -20,6 +44,8 @@ set(GLFW_ROOT /Users/walkerimmel/programming/glfw-3.4)
+ target_include_directories(learnopengl PRIVATE
+     ${CMAKE_CURRENT_SOURCE_DIR}/include
+     ${GLFW_ROOT}/include
++    ${CMAKE_CURRENT_SOURCE_DIR}/imgui
++    ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
+ )
+ 
+ target_link_libraries(learnopengl
+diff --git a/cmake-build-debug/textures/Back Blue 1.png b/cmake-build-debug/textures/Back Blue 1.png
+deleted file mode 100644
+index 90f2de2..0000000
+Binary files a/cmake-build-debug/textures/Back Blue 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Back Blue 2.png b/cmake-build-debug/textures/Back Blue 2.png
+deleted file mode 100644
+index 76fea3c..0000000
+Binary files a/cmake-build-debug/textures/Back Blue 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Back Grey 1.png b/cmake-build-debug/textures/Back Grey 1.png
+deleted file mode 100644
+index 680168b..0000000
+Binary files a/cmake-build-debug/textures/Back Grey 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Back Grey 2.png b/cmake-build-debug/textures/Back Grey 2.png
+deleted file mode 100644
+index 887a4be..0000000
+Binary files a/cmake-build-debug/textures/Back Grey 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Back Red 1.png b/cmake-build-debug/textures/Back Red 1.png
+deleted file mode 100644
+index 4c904df..0000000
+Binary files a/cmake-build-debug/textures/Back Red 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Back Red 2.png b/cmake-build-debug/textures/Back Red 2.png
+deleted file mode 100644
+index 3bd86f3..0000000
+Binary files a/cmake-build-debug/textures/Back Red 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Card Space.png b/cmake-build-debug/textures/Card Space.png
+deleted file mode 100644
+index 8359e86..0000000
+Binary files a/cmake-build-debug/textures/Card Space.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 1.png b/cmake-build-debug/textures/Clubs 1.png
+deleted file mode 100644
+index f80f2f5..0000000
+Binary files a/cmake-build-debug/textures/Clubs 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 10.png b/cmake-build-debug/textures/Clubs 10.png
+deleted file mode 100644
+index 0b8e005..0000000
+Binary files a/cmake-build-debug/textures/Clubs 10.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 11.png b/cmake-build-debug/textures/Clubs 11.png
+deleted file mode 100644
+index b05df9b..0000000
+Binary files a/cmake-build-debug/textures/Clubs 11.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 12.png b/cmake-build-debug/textures/Clubs 12.png
+deleted file mode 100644
+index 89ddb0e..0000000
+Binary files a/cmake-build-debug/textures/Clubs 12.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 13.png b/cmake-build-debug/textures/Clubs 13.png
+deleted file mode 100644
+index 5c17db3..0000000
+Binary files a/cmake-build-debug/textures/Clubs 13.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 2.png b/cmake-build-debug/textures/Clubs 2.png
+deleted file mode 100644
+index 0be3cf9..0000000
+Binary files a/cmake-build-debug/textures/Clubs 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 3.png b/cmake-build-debug/textures/Clubs 3.png
+deleted file mode 100644
+index 9004bfe..0000000
+Binary files a/cmake-build-debug/textures/Clubs 3.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 4.png b/cmake-build-debug/textures/Clubs 4.png
+deleted file mode 100644
+index 990ce07..0000000
+Binary files a/cmake-build-debug/textures/Clubs 4.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 5.png b/cmake-build-debug/textures/Clubs 5.png
+deleted file mode 100644
+index c8caa22..0000000
+Binary files a/cmake-build-debug/textures/Clubs 5.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 6.png b/cmake-build-debug/textures/Clubs 6.png
+deleted file mode 100644
+index 1ca84d0..0000000
+Binary files a/cmake-build-debug/textures/Clubs 6.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 7.png b/cmake-build-debug/textures/Clubs 7.png
+deleted file mode 100644
+index d010585..0000000
+Binary files a/cmake-build-debug/textures/Clubs 7.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 8.png b/cmake-build-debug/textures/Clubs 8.png
+deleted file mode 100644
+index 4b113cf..0000000
+Binary files a/cmake-build-debug/textures/Clubs 8.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Clubs 9.png b/cmake-build-debug/textures/Clubs 9.png
+deleted file mode 100644
+index 30ae1db..0000000
+Binary files a/cmake-build-debug/textures/Clubs 9.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 1.png b/cmake-build-debug/textures/Diamond 1.png
+deleted file mode 100644
+index 98dfb51..0000000
+Binary files a/cmake-build-debug/textures/Diamond 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 10.png b/cmake-build-debug/textures/Diamond 10.png
+deleted file mode 100644
+index 26cfdaa..0000000
+Binary files a/cmake-build-debug/textures/Diamond 10.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 11.png b/cmake-build-debug/textures/Diamond 11.png
+deleted file mode 100644
+index 99dbd1c..0000000
+Binary files a/cmake-build-debug/textures/Diamond 11.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 12.png b/cmake-build-debug/textures/Diamond 12.png
+deleted file mode 100644
+index 710c1c6..0000000
+Binary files a/cmake-build-debug/textures/Diamond 12.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 13.png b/cmake-build-debug/textures/Diamond 13.png
+deleted file mode 100644
+index 3817631..0000000
+Binary files a/cmake-build-debug/textures/Diamond 13.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 2.png b/cmake-build-debug/textures/Diamond 2.png
+deleted file mode 100644
+index b5c65a0..0000000
+Binary files a/cmake-build-debug/textures/Diamond 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 3.png b/cmake-build-debug/textures/Diamond 3.png
+deleted file mode 100644
+index 7ba4d80..0000000
+Binary files a/cmake-build-debug/textures/Diamond 3.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 4.png b/cmake-build-debug/textures/Diamond 4.png
+deleted file mode 100644
+index 210b18a..0000000
+Binary files a/cmake-build-debug/textures/Diamond 4.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 5.png b/cmake-build-debug/textures/Diamond 5.png
+deleted file mode 100644
+index 3098b05..0000000
+Binary files a/cmake-build-debug/textures/Diamond 5.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 6.png b/cmake-build-debug/textures/Diamond 6.png
+deleted file mode 100644
+index 6840e37..0000000
+Binary files a/cmake-build-debug/textures/Diamond 6.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 7.png b/cmake-build-debug/textures/Diamond 7.png
+deleted file mode 100644
+index 49f50e5..0000000
+Binary files a/cmake-build-debug/textures/Diamond 7.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 8.png b/cmake-build-debug/textures/Diamond 8.png
+deleted file mode 100644
+index 29e6903..0000000
+Binary files a/cmake-build-debug/textures/Diamond 8.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Diamond 9.png b/cmake-build-debug/textures/Diamond 9.png
+deleted file mode 100644
+index e5e3fe6..0000000
+Binary files a/cmake-build-debug/textures/Diamond 9.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 1.png b/cmake-build-debug/textures/Hearts 1.png
+deleted file mode 100644
+index 86009da..0000000
+Binary files a/cmake-build-debug/textures/Hearts 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 10.png b/cmake-build-debug/textures/Hearts 10.png
+deleted file mode 100644
+index 4eae476..0000000
+Binary files a/cmake-build-debug/textures/Hearts 10.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 11.png b/cmake-build-debug/textures/Hearts 11.png
+deleted file mode 100644
+index bc5a54c..0000000
+Binary files a/cmake-build-debug/textures/Hearts 11.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 12.png b/cmake-build-debug/textures/Hearts 12.png
+deleted file mode 100644
+index 099f403..0000000
+Binary files a/cmake-build-debug/textures/Hearts 12.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 13.png b/cmake-build-debug/textures/Hearts 13.png
+deleted file mode 100644
+index 4bc672a..0000000
+Binary files a/cmake-build-debug/textures/Hearts 13.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 2.png b/cmake-build-debug/textures/Hearts 2.png
+deleted file mode 100644
+index 65dbd4d..0000000
+Binary files a/cmake-build-debug/textures/Hearts 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 3.png b/cmake-build-debug/textures/Hearts 3.png
+deleted file mode 100644
+index abfa198..0000000
+Binary files a/cmake-build-debug/textures/Hearts 3.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 4.png b/cmake-build-debug/textures/Hearts 4.png
+deleted file mode 100644
+index 2720d7d..0000000
+Binary files a/cmake-build-debug/textures/Hearts 4.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 5.png b/cmake-build-debug/textures/Hearts 5.png
+deleted file mode 100644
+index 79ae89b..0000000
+Binary files a/cmake-build-debug/textures/Hearts 5.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 6.png b/cmake-build-debug/textures/Hearts 6.png
+deleted file mode 100644
+index f9107b0..0000000
+Binary files a/cmake-build-debug/textures/Hearts 6.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 7.png b/cmake-build-debug/textures/Hearts 7.png
+deleted file mode 100644
+index 88b6e09..0000000
+Binary files a/cmake-build-debug/textures/Hearts 7.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 8.png b/cmake-build-debug/textures/Hearts 8.png
+deleted file mode 100644
+index 7623d82..0000000
+Binary files a/cmake-build-debug/textures/Hearts 8.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Hearts 9.png b/cmake-build-debug/textures/Hearts 9.png
+deleted file mode 100644
+index e49499f..0000000
+Binary files a/cmake-build-debug/textures/Hearts 9.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Joker Black.png b/cmake-build-debug/textures/Joker Black.png
+deleted file mode 100644
+index 393cdea..0000000
+Binary files a/cmake-build-debug/textures/Joker Black.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Joker Red.png b/cmake-build-debug/textures/Joker Red.png
+deleted file mode 100644
+index 327defb..0000000
+Binary files a/cmake-build-debug/textures/Joker Red.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 1.png b/cmake-build-debug/textures/Spades 1.png
+deleted file mode 100644
+index 96a55b9..0000000
+Binary files a/cmake-build-debug/textures/Spades 1.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 10.png b/cmake-build-debug/textures/Spades 10.png
+deleted file mode 100644
+index f122789..0000000
+Binary files a/cmake-build-debug/textures/Spades 10.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 11.png b/cmake-build-debug/textures/Spades 11.png
+deleted file mode 100644
+index 57117be..0000000
+Binary files a/cmake-build-debug/textures/Spades 11.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 12.png b/cmake-build-debug/textures/Spades 12.png
+deleted file mode 100644
+index 618c693..0000000
+Binary files a/cmake-build-debug/textures/Spades 12.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 13.png b/cmake-build-debug/textures/Spades 13.png
+deleted file mode 100644
+index c71a5e0..0000000
+Binary files a/cmake-build-debug/textures/Spades 13.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 2.png b/cmake-build-debug/textures/Spades 2.png
+deleted file mode 100644
+index aeae7f5..0000000
+Binary files a/cmake-build-debug/textures/Spades 2.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 3.png b/cmake-build-debug/textures/Spades 3.png
+deleted file mode 100644
+index 7cfff0c..0000000
+Binary files a/cmake-build-debug/textures/Spades 3.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 4.png b/cmake-build-debug/textures/Spades 4.png
+deleted file mode 100644
+index 6ccb8ff..0000000
+Binary files a/cmake-build-debug/textures/Spades 4.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 5.png b/cmake-build-debug/textures/Spades 5.png
+deleted file mode 100644
+index ece7068..0000000
+Binary files a/cmake-build-debug/textures/Spades 5.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 6.png b/cmake-build-debug/textures/Spades 6.png
+deleted file mode 100644
+index 6358cbe..0000000
+Binary files a/cmake-build-debug/textures/Spades 6.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 7.png b/cmake-build-debug/textures/Spades 7.png
+deleted file mode 100644
+index de854da..0000000
+Binary files a/cmake-build-debug/textures/Spades 7.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 8.png b/cmake-build-debug/textures/Spades 8.png
+deleted file mode 100644
+index 86f0745..0000000
+Binary files a/cmake-build-debug/textures/Spades 8.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/Spades 9.png b/cmake-build-debug/textures/Spades 9.png
+deleted file mode 100644
+index e9e0bfd..0000000
+Binary files a/cmake-build-debug/textures/Spades 9.png and /dev/null differ
+diff --git a/cmake-build-debug/textures/spider.png b/cmake-build-debug/textures/spider.png
+deleted file mode 100644
+index 8dd06d2..0000000
+Binary files a/cmake-build-debug/textures/spider.png and /dev/null differ
+diff --git a/src/core/move_system.h b/src/core/move_system.h
+index e1c0be3..92b22a5 100644
+--- a/src/core/move_system.h
++++ b/src/core/move_system.h
+@@ -1,8 +1,8 @@
+ #pragma once
+ #include <vector>
+ 
+-#include "model/card.h"
+-#include "model/pile.h"
++#include "../model/card.h"
++#include "../model/pile.h"
+ 
+ void moveRun(
+     std::vector<Card>& cards, std::vector<Pile>& piles,
+diff --git a/src/render/render.cpp b/src/render/render.cpp
+index 607b01b..48c2f92 100644
+--- a/src/render/render.cpp
++++ b/src/render/render.cpp
+@@ -74,13 +74,13 @@ unsigned int createShaderProgram() {
+             vec2 q = p - halfSize + vec2(r);
+             float dist = length(max(q, 0.0));
+ 
+-            vec4 texColor = texture2D(cardTexture, TexCoords);
++            vec4 texColor = texture(cardTexture, TexCoords);
+ 
+             if (dist > r) {
+                 discard;
+             }
+ 
+-            gl_FragColor = vec4(texColor.rgb * uDimAmount, texColor.a);
++            FragColor = vec4(texColor.rgb * uDimAmount, texColor.a);
+         }
+     )";
+ 
+diff --git a/src/rules/run_rules.h b/src/rules/run_rules.h
+index 34c57b9..1f58235 100644
+--- a/src/rules/run_rules.h
++++ b/src/rules/run_rules.h
+@@ -1,6 +1,6 @@
+ #pragma once
+-#include "model/card.h"
+-#include "model/pile.h"
++#include "../model/card.h"
++#include "../model/pile.h"
+ 
+ bool isValidRun(const std::vector<Card>& cards, const Pile& pile, int startIndex);
+ int findTopRun(const std::vector<Card>& cards, const Pile& pile);
+diff --git a/src/rules/spider_rules.cpp b/src/rules/spider_rules.cpp
+index 3377cd1..7f4bf81 100644
+--- a/src/rules/spider_rules.cpp
++++ b/src/rules/spider_rules.cpp
+@@ -1,7 +1,7 @@
+ #include "spider_rules.h"
+ #include "run_rules.h"
+ #include "../model/pile.h"
+-#include "core/move_system.h"
++#include "../core/move_system.h"
+ 
+ namespace {
+     constexpr GameConfig kSpiderConfig{

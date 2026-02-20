@@ -14,9 +14,9 @@ void updateCardPositions(std::vector<Card>& cards, std::vector<Pile>& piles) {
         float faceDownSpacing = faceDownBaseSpacing;
         constexpr float maxHeight = 1.25f;
 
-        int cardCount = static_cast<int>(pile.cardIndices.size());
+        const int cardCount = static_cast<int>(pile.cardIndices.size());
 
-        if (cardCount * spacing > maxHeight && cardCount > 0) {
+        if (static_cast<float>(cardCount) * spacing > maxHeight && cardCount > 0) {
             spacing = maxHeight / static_cast<float>(cardCount);
             //faceDownSpacing = (maxHeight / static_cast<float>(pile.cardIndices.size())) - 0.03f;
             faceDownSpacing = spacing - 0.03f;
@@ -38,7 +38,7 @@ void updateCardPositions(std::vector<Card>& cards, std::vector<Pile>& piles) {
         float bottomY = pile.basePosition.y;
 
         for (int i = 0; i < cardCount; ++i) {
-            int cardIndex = pile.cardIndices[i];
+            const int cardIndex = pile.cardIndices[i];
             if (cardIndex < 0 || cardIndex >= cards.size()) continue;
 
             Card& card = cards[cardIndex];
@@ -69,7 +69,7 @@ void updateCardPositions(std::vector<Card>& cards, std::vector<Pile>& piles) {
         }
 
         if (isTableau && cardCount > 1) {
-            float cardHeight = 0.3f;
+            constexpr float cardHeight = 0.3f;
             pile.visualHeight = (pile.basePosition.y - bottomY) + cardHeight;
         } else {
             pile.visualHeight = 0.3f;

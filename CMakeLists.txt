@@ -13,6 +13,7 @@ add_executable(SpiderSolitaire
         src/core/layout.cpp
         src/core/path.cpp
         src/core/move_system.cpp
+        src/core/persistence.cpp
 
         src/rules/run_rules.cpp
         src/rules/spider_rules.cpp
@@ -53,6 +54,12 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(SpiderSolitaire PRIVATE
         glfw
         OpenGL::GL
+)
+
+add_custom_command(TARGET SpiderSolitaire POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets/shaders
+        $<TARGET_FILE_DIR:SpiderSolitaire>/assets/shaders
 )
 
 # Platform specific
