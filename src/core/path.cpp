@@ -1,4 +1,5 @@
 #include "path.h"
+#include <iostream>
 
 #if defined(__APPLE__)
     #include <mach-o/dyld.h>
@@ -22,8 +23,8 @@ namespace path {
 
 #elif defined(_WIN32)
         char buffer[MAX_PATH];
-        GetModuleFileNameA(nullptr, buffer, MAX_PATH);
-        return std::filesystem::canonical(buffer);
+        DWORD const length = GetModuleFileNameA(nullptr, buffer, MAX_PATH);
+        return std::filesystem::path(std::string(buffer, length));
 
 #elif defined(__linux__)
         return std::filesystem::canonical("/proc/self/exe");
@@ -33,10 +34,16 @@ namespace path {
 #endif
     }
 
+    // std::filesystem::path assetPath(const std::filesystem::path& relativePath) {
+    //     const auto exe = executablePath();
+    //     const auto basePath = exe.parent_path().parent_path();
+    //     const auto full = basePath / "assets" / relativePath;
+    //
+    //     std::cout << "Trying asset path: " << full << std::endl;
+    //
+    //     return full;
+    // }
     std::filesystem::path assetPath(const std::filesystem::path& relativePath) {
-        const auto exe = executablePath();
-        const auto basePath = exe.parent_path();
-
-        return (basePath / "assets" / relativePath);
+        return std::filesystem::current_path() / "assets" / relativePath;
     }
 }

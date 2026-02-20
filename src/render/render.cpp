@@ -321,7 +321,7 @@ void Renderer::endFrame() {
 }
 
 GLuint getCardTexture(const Card& card) {
-    const std::string path = getCardTexturePath(card.suit, card.rank);
+    const std::string path = getCardTexturePath(card.suit, card.rank).string();
     if (textureCache.find(path) == textureCache.end()) {
         textureCache[path] = loadTexture(path.c_str());
     }

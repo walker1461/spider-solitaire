@@ -54,7 +54,7 @@ std::vector<Card> generateDeck(int numToGenerate) {
                 card.indexInPile = -1;
                 card.pileIndex = -1;
 
-                std::string const path = getCardTexturePath(suit, rank);
+                std::string const path = getCardTexturePath(suit, rank).string();
                 deck.push_back(card);
             }
         }
