@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 
 #include "imgui.h"
+#include "persistence.h"
 #include "../rules/spider_rules.h"
 #include "ui/main_menu.h"
 #include "ui/pause_menu.h"
@@ -59,6 +60,19 @@ Pile& Game::initializeGame(std::vector<Card>& cards, std::vector<Pile>& cardPile
     return stock;
 }
 
+void Game::initHighScores() {
+    highScores = loadScores();
+}
+
+void Game::updateHighScores() {
+    highScores.push_back(score);
+    std::sort(highScores.rbegin(), highScores.rend());
+
+    if (highScores.size() > 5) {
+        highScores.resize(5);
+    }
+}
+
 void Game::startNewGame(const Difficulty difficulty) {
     this->difficulty = difficulty;
     //const int suitCount = (difficulty == Easy) ? 1 : (difficulty == Normal) ? 2 : 4;
@@ -66,7 +80,16 @@ void Game::startNewGame(const Difficulty difficulty) {
     this->cards = generateDeck(8);
 
     rules = std::make_unique<SpiderRules>();
+
     gameConfig = rules->config();
+
+    if (difficulty == Difficulty::Easy) {
+        gameConfig.maxPileSize = 20;
+    } else if (difficulty == Difficulty::Normal) {
+        gameConfig.maxPileSize = 18;
+    } else if (difficulty == Difficulty::Hard) {
+        gameConfig.maxPileSize = 16;
+    };
 
     piles.clear();
     piles.resize(gameConfig.tableauCount);
@@ -119,7 +142,7 @@ void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseD
             break;
         }
         case GameState::MENU: {
-            showMenu(state, difficulty);
+            showMenu(state, difficulty, highScores);
             break;
         }
         case GameState::PAUSED: {
@@ -132,25 +155,22 @@ void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseD
             state = GameState::GAME;
             break;
         }
-        case GameState::WINNER: {
+        case GameState::LOSER: {
             ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-            ImGui::Begin("You win!!!", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Game Over!", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
 
             if (ImGui::Button("Play Again", ImVec2(140, 25))) {
                 state = GameState::NEWGAME;
-                hasWon = false;
+                gameOver = false;
             }
             if (ImGui::Button("Main Menu", ImVec2(140, 25))) {
                 state = GameState::MENU;
-                hasWon = false;
+                gameOver = false;
             }
             ImGui::End();
             break;
         }
         case GameState::QUIT: {
-            break;
-        }
-        default: {
             break;
         }
     }
@@ -161,20 +181,24 @@ void shuffleDeck(std::vector<Card>& cards) {
     std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
 }
 
-void Game::startDealing() {
-    deal.active = true;
-    deal.timer = 0.0f;
-    deal.nextPile = 0;
-}
+// void Game::startDealing() {
+//     deal.active = true;
+//     deal.timer = 0.0f;
+//     deal.nextPile = 0;
+// }
 
 void Game::updateDealing(const float deltaTime, Pile& stock) {
     if (!deal.active) return;
+
     deal.timer += deltaTime;
     if (deal.timer < deal.delay) return;
     deal.timer = 0.0f;
 
     if (stock.cardIndices.empty() || deal.nextPile >= this->gameConfig.tableauCount) {
         deal.active = false;
+        if (rules->checkForGameOver(piles, gameConfig.maxPileSize)) state = GameState::LOSER;
+        updateHighScores();
+        saveScores(highScores);
         return;
     }
 

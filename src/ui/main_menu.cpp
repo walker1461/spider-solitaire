@@ -2,8 +2,9 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <string>
 
-void showMenu(GameState& gameState, Difficulty& difficulty) {
+void showMenu(GameState& gameState, Difficulty& difficulty, std::vector<int> highScores) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 20));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 14.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));
@@ -43,4 +44,17 @@ void showMenu(GameState& gameState, Difficulty& difficulty) {
 
     ImGui::End();
     ImGui::PopStyleVar(3);
+
+    ImGui::SetNextWindowSize(ImVec2(200, 200));
+    ImGui::Begin("High Scores", nullptr,
+                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+
+    ImGui::Text("High Scores:");
+    ImGui::Separator();
+    for (int i = 0; i < highScores.size(); i++) {
+        std::string scoreText = std::to_string(highScores[i]);
+        ImGui::Text(scoreText.c_str());
+    }
+
+    ImGui::End();
 }

@@ -9,7 +9,7 @@ enum GameState {
     MENU,
     PAUSED,
     GAME,
-    WINNER,
+    LOSER,
     QUIT
 };
 
@@ -24,20 +24,24 @@ struct Game {
     Pile& initializeGame(std::vector<Card>& cards, std::vector<Pile>& cardPiles) const;
     void startNewGame(Difficulty difficulty);
     void update(float deltaTime, const Vec2& mousePos, bool mouseDown, GLFWwindow* window);
+    void initHighScores();
+    void updateHighScores();
 
     GameState state = GameState::MENU;
     Difficulty difficulty = Difficulty::Normal;
 
+    std::vector<int> highScores;
+
     std::vector<Card> cards;
     std::vector<Pile> piles;
-    std::vector<int> pileWarnings{};
+    std::vector<int> pileWarnings;
     DealState deal;
 
     std::unique_ptr<GameRules> rules;
     DragController drag;
     GameConfig gameConfig;
 
-    bool hasWon = false;
+    bool gameOver = false;
     bool isPaused = false;
     int score = 0;
 

@@ -53,6 +53,7 @@ int main() {
     renderer.init();
 
     Game game;
+	game.initHighScores();
 
     static auto lastTime = static_cast<float>(glfwGetTime());
 
@@ -63,13 +64,16 @@ int main() {
 
         glfwPollEvents();
 
-        if (game.state == QUIT)
-            break;
-
     	int window_width, window_height;
     	glfwGetFramebufferSize(window, &window_width, &window_height);
     	int screen_width, screen_height;
     	glfwGetWindowSize(window, &screen_width, &screen_height);
+
+    	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    	glClear(GL_COLOR_BUFFER_BIT);
+
+        if (game.state == QUIT)
+            break;
 
     	const auto currentTime = static_cast<float>(glfwGetTime());
     	const float deltaTime = currentTime - lastTime;
@@ -100,7 +104,7 @@ int main() {
         Renderer::endFrame();
 
         // game score
-    	if (game.state == GameState::GAME) {
+    	if (game.state != GameState::MENU) {
     		std::string scoreText = "Score: " + std::to_string(game.score);
     		const float textWidth = ImGui::CalcTextSize(scoreText.c_str()).x;
 
@@ -111,10 +115,6 @@ int main() {
     		ImGui::Text("%s", scoreText.c_str());
     		ImGui::End();
     	}
-    	else {
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
