@@ -11,6 +11,7 @@ This project leverages several industry-standard libraries:
 *   **GLAD**: To load OpenGL function pointers.
 *   **Dear ImGui**: For the user interface (menus, pause screen, etc.).
 *   **stb_image**: For loading textures (card faces, backgrounds).
+*   **miniaudio**: Single source file audio playback and capture library used to play sound effects.
 
 ## Features
 
