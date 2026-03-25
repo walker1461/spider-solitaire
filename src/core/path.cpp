@@ -34,16 +34,16 @@ namespace path {
 #endif
     }
 
-    // std::filesystem::path assetPath(const std::filesystem::path& relativePath) {
-    //     const auto exe = executablePath();
-    //     const auto basePath = exe.parent_path().parent_path();
-    //     const auto full = basePath / "assets" / relativePath;
-    //
-    //     std::cout << "Trying asset path: " << full << std::endl;
-    //
-    //     return full;
-    // }
+    // MacOS method
     std::filesystem::path assetPath(const std::filesystem::path& relativePath) {
-        return std::filesystem::current_path() / "assets" / relativePath;
+        const auto exe = executablePath();
+        const auto basePath = exe.parent_path();
+
+        const auto full = basePath / "assets" / relativePath;
+        return full;
     }
+    // Windows method
+    // std::filesystem::path assetPath(const std::filesystem::path& relativePath) {
+    //     return std::filesystem::current_path() / "assets" / relativePath;
+    // }
 }

@@ -142,10 +142,24 @@ CMakeFiles/SpiderSolitaire.dir/src/core/move_system.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/SpiderSolitaire.dir/src/core/move_system.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/walkerimmel/programming/SpiderSolitaire/src/core/move_system.cpp -o CMakeFiles/SpiderSolitaire.dir/src/core/move_system.cpp.s
 
+CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
+CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/core/persistence.cpp
+CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/core/persistence.cpp
+
+CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/walkerimmel/programming/SpiderSolitaire/src/core/persistence.cpp > CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.i
+
+CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/walkerimmel/programming/SpiderSolitaire/src/core/persistence.cpp -o CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.s
+
 CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/rules/run_rules.cpp
 CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/rules/run_rules.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.i: cmake_force
@@ -159,7 +173,7 @@ CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/rules/spider_rules.cpp
 CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/rules/spider_rules.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.i: cmake_force
@@ -173,7 +187,7 @@ CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/input/card_drag.cpp
 CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/input/card_drag.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.i: cmake_force
@@ -187,7 +201,7 @@ CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/model/card.cpp
 CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/model/card.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.i: cmake_force
@@ -201,7 +215,7 @@ CMakeFiles/SpiderSolitaire.dir/src/model/card.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/render/render.cpp
 CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/render/render.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.i: cmake_force
@@ -215,7 +229,7 @@ CMakeFiles/SpiderSolitaire.dir/src/render/render.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o: /Users/walkerimmel/programming/SpiderSolitaire/include/glad/glad.c
 CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o -MF CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o.d -o CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/glad/glad.c
 
 CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.i: cmake_force
@@ -229,7 +243,7 @@ CMakeFiles/SpiderSolitaire.dir/include/glad/glad.c.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui.cpp
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui.cpp
 
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.i: cmake_force
@@ -243,7 +257,7 @@ CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui_draw.cpp
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui_draw.cpp
 
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.i: cmake_force
@@ -257,7 +271,7 @@ CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_draw.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui_widgets.cpp
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui_widgets.cpp
 
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.i: cmake_force
@@ -271,7 +285,7 @@ CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_widgets.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui_tables.cpp
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/imgui_tables.cpp
 
 CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.i: cmake_force
@@ -285,7 +299,7 @@ CMakeFiles/SpiderSolitaire.dir/include/imgui/imgui_tables.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends/imgui_impl_glfw.cpp
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends/imgui_impl_glfw.cpp
 
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.i: cmake_force
@@ -299,7 +313,7 @@ CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_glfw.cpp.s: cma
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends/imgui_impl_opengl3.cpp
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends/imgui_impl_opengl3.cpp
 
 CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.i: cmake_force
@@ -313,7 +327,7 @@ CMakeFiles/SpiderSolitaire.dir/include/imgui/backends/imgui_impl_opengl3.cpp.s: 
 CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/ui/main_menu.cpp
 CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/ui/main_menu.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.i: cmake_force
@@ -327,7 +341,7 @@ CMakeFiles/SpiderSolitaire.dir/src/ui/main_menu.cpp.s: cmake_force
 CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o: CMakeFiles/SpiderSolitaire.dir/flags.make
 CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o: /Users/walkerimmel/programming/SpiderSolitaire/src/ui/pause_menu.cpp
 CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o: CMakeFiles/SpiderSolitaire.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o -MF CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o.d -o CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o -c /Users/walkerimmel/programming/SpiderSolitaire/src/ui/pause_menu.cpp
 
 CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.i: cmake_force
@@ -345,6 +359,7 @@ SpiderSolitaire_OBJECTS = \
 "CMakeFiles/SpiderSolitaire.dir/src/core/layout.cpp.o" \
 "CMakeFiles/SpiderSolitaire.dir/src/core/path.cpp.o" \
 "CMakeFiles/SpiderSolitaire.dir/src/core/move_system.cpp.o" \
+"CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o" \
 "CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o" \
 "CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o" \
 "CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o" \
@@ -368,6 +383,7 @@ SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/core/game.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/core/layout.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/core/path.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/core/move_system.cpp.o
+SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/rules/run_rules.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/rules/spider_rules.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o
@@ -385,9 +401,11 @@ SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/src/ui/pause_menu.cpp.o
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/build.make
 SpiderSolitaire: /usr/local/lib/libglfw3.a
 SpiderSolitaire: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework
+SpiderSolitaire: include/fmt/libfmt.a
 SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Linking CXX executable SpiderSolitaire"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable SpiderSolitaire"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/SpiderSolitaire.dir/link.txt --verbose=$(VERBOSE)
+	/usr/local/bin/cmake -E copy_directory /Users/walkerimmel/programming/SpiderSolitaire/assets/shaders /Users/walkerimmel/programming/SpiderSolitaire/build/assets/shaders
 
 # Rule to build all files generated by this target.
 CMakeFiles/SpiderSolitaire.dir/build: SpiderSolitaire

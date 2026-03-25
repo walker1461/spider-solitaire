@@ -21,6 +21,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/SpiderSolitaire.dir/src/core/move_system.cpp.o.d"
   "CMakeFiles/SpiderSolitaire.dir/src/core/path.cpp.o"
   "CMakeFiles/SpiderSolitaire.dir/src/core/path.cpp.o.d"
+  "CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o"
+  "CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o.d"
   "CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o"
   "CMakeFiles/SpiderSolitaire.dir/src/input/card_drag.cpp.o.d"
   "CMakeFiles/SpiderSolitaire.dir/src/main.cpp.o"

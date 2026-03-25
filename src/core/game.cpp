@@ -17,6 +17,8 @@
 constexpr float CARD_HEIGHT = 0.3f;
 constexpr float CARD_WIDTH = CARD_HEIGHT * 0.73f;
 
+Game::Game(AudioManager& audio) : audio(audio) {}
+
 Pile& Game::initializeGame(std::vector<Card>& cards, std::vector<Pile>& cardPiles) const {
     // ---------- INITIAL DEAL -----------
     shuffleDeck(cards);
@@ -128,8 +130,10 @@ void Game::update(const float deltaTime, const Vec2& mousePos, const bool mouseD
                                         piles[gameConfig.stockPileIndex], deal, deltaTime);
             if (dropEvent) {
                 result = rules->onDrop(cards, piles, dropEvent->fromPile, dropEvent->toPile, dropEvent->startIndex);
+                audio.playSound("deal");
                 if (result.runCleared) {
-                    score += 100;
+                    comboCounter +=1;
+                    score += (100 + (50 * comboCounter));
                 }
             }
 
@@ -226,6 +230,8 @@ void Game::updateDealing(const float deltaTime, Pile& stock) {
     if (piles[gameConfig.stockPileIndex].cardIndices.size() < gameConfig.tableauCount) {
         refillStock();
     }
+
+    comboCounter = 0;
 }
 
 void Game::updateRunClearAnimation(const float deltaTime) {

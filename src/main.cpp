@@ -1,3 +1,5 @@
+#include "core/audio.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -48,11 +50,16 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
-    // ---------- INIT RENDERER & GAME -----------
+    // -------- INIT RENDERER + GAME + AUDIO ---------
     Renderer renderer;
     renderer.init();
 
-    Game game;
+	AudioManager audioManager;
+	audioManager.init();
+	audioManager.loadSound("deal", "assets/sounds/deal.wav");
+	audioManager.loadSound("slap", "assets/sounds/slap.wav");
+
+    Game game(audioManager);
 	game.initHighScores();
 
     static auto lastTime = static_cast<float>(glfwGetTime());
@@ -127,6 +134,7 @@ int main() {
 
     glfwDestroyWindow(window);
     glfwTerminate();
+	audioManager.shutdown();
 
     return 0;
 }

@@ -5,13 +5,13 @@
 # compile CXX with /usr/bin/c++
 C_DEFINES = 
 
-C_INCLUDES = -I/Users/walkerimmel/programming/SpiderSolitaire/src -I/Users/walkerimmel/programming/SpiderSolitaire/include -I/Users/walkerimmel/programming/SpiderSolitaire/include/glad -I/Users/walkerimmel/programming/SpiderSolitaire/include/glm -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends -I/Users/walkerimmel/programming/SpiderSolitaire/include/KHR -iframework /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
+C_INCLUDES = -I/Users/walkerimmel/programming/SpiderSolitaire/src -I/Users/walkerimmel/programming/SpiderSolitaire/include -I/Users/walkerimmel/programming/SpiderSolitaire/include/glad -I/Users/walkerimmel/programming/SpiderSolitaire/include/glm -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends -I/Users/walkerimmel/programming/SpiderSolitaire/include/KHR -I/Users/walkerimmel/programming/SpiderSolitaire/include/fmt/include -iframework /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
 
 C_FLAGS = 
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/walkerimmel/programming/SpiderSolitaire/src -I/Users/walkerimmel/programming/SpiderSolitaire/include -I/Users/walkerimmel/programming/SpiderSolitaire/include/glad -I/Users/walkerimmel/programming/SpiderSolitaire/include/glm -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends -I/Users/walkerimmel/programming/SpiderSolitaire/include/KHR -iframework /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
+CXX_INCLUDES = -I/Users/walkerimmel/programming/SpiderSolitaire/src -I/Users/walkerimmel/programming/SpiderSolitaire/include -I/Users/walkerimmel/programming/SpiderSolitaire/include/glad -I/Users/walkerimmel/programming/SpiderSolitaire/include/glm -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui -I/Users/walkerimmel/programming/SpiderSolitaire/include/imgui/backends -I/Users/walkerimmel/programming/SpiderSolitaire/include/KHR -I/Users/walkerimmel/programming/SpiderSolitaire/include/fmt/include -iframework /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
 
-CXX_FLAGS = -std=gnu++17
+CXX_FLAGS = -std=c++20
 

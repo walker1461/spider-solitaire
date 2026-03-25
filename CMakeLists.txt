@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(SpiderSolitaire LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_subdirectory(include/glfw)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(SpiderSolitaire
         src/main.cpp
@@ -14,6 +13,7 @@ add_executable(SpiderSolitaire
         src/core/path.cpp
         src/core/move_system.cpp
         src/core/persistence.cpp
+        src/core/audio.cpp
 
         src/rules/run_rules.cpp
         src/rules/spider_rules.cpp
@@ -48,12 +48,16 @@ target_include_directories(SpiderSolitaire PRIVATE
         include/KHR
 )
 
+add_subdirectory(include/fmt)
+
 # Dependencies
 find_package(OpenGL REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 
 target_link_libraries(SpiderSolitaire PRIVATE
         glfw
         OpenGL::GL
+        fmt
 )
 
 add_custom_command(TARGET SpiderSolitaire POST_BUILD

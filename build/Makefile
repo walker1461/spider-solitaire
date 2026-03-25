@@ -194,6 +194,19 @@ SpiderSolitaire/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/build
 .PHONY : SpiderSolitaire/fast
 
+#=============================================================================
+# Target rules for targets named fmt
+
+# Build rule for target.
+fmt: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fmt
+.PHONY : fmt
+
+# fast build rule for target.
+fmt/fast:
+	$(MAKE) $(MAKESILENT) -f include/fmt/CMakeFiles/fmt.dir/build.make include/fmt/CMakeFiles/fmt.dir/build
+.PHONY : fmt/fast
+
 include/glad/glad.o: include/glad/glad.c.o
 .PHONY : include/glad/glad.o
 
@@ -458,6 +471,30 @@ src/core/path.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/src/core/path.cpp.s
 .PHONY : src/core/path.cpp.s
 
+src/core/persistence.o: src/core/persistence.cpp.o
+.PHONY : src/core/persistence.o
+
+# target to build an object file
+src/core/persistence.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.o
+.PHONY : src/core/persistence.cpp.o
+
+src/core/persistence.i: src/core/persistence.cpp.i
+.PHONY : src/core/persistence.i
+
+# target to preprocess a source file
+src/core/persistence.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.i
+.PHONY : src/core/persistence.cpp.i
+
+src/core/persistence.s: src/core/persistence.cpp.s
+.PHONY : src/core/persistence.s
+
+# target to generate assembly for a file
+src/core/persistence.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/src/core/persistence.cpp.s
+.PHONY : src/core/persistence.cpp.s
+
 src/input/card_drag.o: src/input/card_drag.cpp.o
 .PHONY : src/input/card_drag.o
 
@@ -665,6 +702,7 @@ help:
 	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... SpiderSolitaire"
+	@echo "... fmt"
 	@echo "... include/glad/glad.o"
 	@echo "... include/glad/glad.i"
 	@echo "... include/glad/glad.s"
@@ -698,6 +736,9 @@ help:
 	@echo "... src/core/path.o"
 	@echo "... src/core/path.i"
 	@echo "... src/core/path.s"
+	@echo "... src/core/persistence.o"
+	@echo "... src/core/persistence.i"
+	@echo "... src/core/persistence.s"
 	@echo "... src/input/card_drag.o"
 	@echo "... src/input/card_drag.i"
 	@echo "... src/input/card_drag.s"

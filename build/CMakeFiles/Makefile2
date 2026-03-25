@@ -64,33 +64,55 @@ CMAKE_BINARY_DIR = /Users/walkerimmel/programming/SpiderSolitaire/build
 
 # The main recursive "all" target.
 all: CMakeFiles/SpiderSolitaire.dir/all
+all: include/fmt/all
 .PHONY : all
 
 # The main recursive "codegen" target.
 codegen: CMakeFiles/SpiderSolitaire.dir/codegen
+codegen: include/fmt/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
-preinstall:
+preinstall: include/fmt/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
 clean: CMakeFiles/SpiderSolitaire.dir/clean
+clean: include/fmt/clean
 .PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory include/fmt
+
+# Recursive "all" directory target.
+include/fmt/all: include/fmt/CMakeFiles/fmt.dir/all
+.PHONY : include/fmt/all
+
+# Recursive "codegen" directory target.
+include/fmt/codegen: include/fmt/CMakeFiles/fmt.dir/codegen
+.PHONY : include/fmt/codegen
+
+# Recursive "preinstall" directory target.
+include/fmt/preinstall:
+.PHONY : include/fmt/preinstall
+
+# Recursive "clean" directory target.
+include/fmt/clean: include/fmt/CMakeFiles/fmt.dir/clean
+.PHONY : include/fmt/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/SpiderSolitaire.dir
 
 # All Build rule for target.
-CMakeFiles/SpiderSolitaire.dir/all:
+CMakeFiles/SpiderSolitaire.dir/all: include/fmt/CMakeFiles/fmt.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 "Built target SpiderSolitaire"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 "Built target SpiderSolitaire"
 .PHONY : CMakeFiles/SpiderSolitaire.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/SpiderSolitaire.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles 24
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/SpiderSolitaire.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles 0
 .PHONY : CMakeFiles/SpiderSolitaire.dir/rule
@@ -102,13 +124,45 @@ SpiderSolitaire: CMakeFiles/SpiderSolitaire.dir/rule
 # codegen rule for target.
 CMakeFiles/SpiderSolitaire.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 "Finished codegen for target SpiderSolitaire"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 "Finished codegen for target SpiderSolitaire"
 .PHONY : CMakeFiles/SpiderSolitaire.dir/codegen
 
 # clean rule for target.
 CMakeFiles/SpiderSolitaire.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SpiderSolitaire.dir/build.make CMakeFiles/SpiderSolitaire.dir/clean
 .PHONY : CMakeFiles/SpiderSolitaire.dir/clean
+
+#=============================================================================
+# Target rules for target include/fmt/CMakeFiles/fmt.dir
+
+# All Build rule for target.
+include/fmt/CMakeFiles/fmt.dir/all:
+	$(MAKE) $(MAKESILENT) -f include/fmt/CMakeFiles/fmt.dir/build.make include/fmt/CMakeFiles/fmt.dir/depend
+	$(MAKE) $(MAKESILENT) -f include/fmt/CMakeFiles/fmt.dir/build.make include/fmt/CMakeFiles/fmt.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=22,23,24 "Built target fmt"
+.PHONY : include/fmt/CMakeFiles/fmt.dir/all
+
+# Build rule for subdir invocation for target.
+include/fmt/CMakeFiles/fmt.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 include/fmt/CMakeFiles/fmt.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles 0
+.PHONY : include/fmt/CMakeFiles/fmt.dir/rule
+
+# Convenience name for target.
+fmt: include/fmt/CMakeFiles/fmt.dir/rule
+.PHONY : fmt
+
+# codegen rule for target.
+include/fmt/CMakeFiles/fmt.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f include/fmt/CMakeFiles/fmt.dir/build.make include/fmt/CMakeFiles/fmt.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/walkerimmel/programming/SpiderSolitaire/build/CMakeFiles --progress-num=22,23,24 "Finished codegen for target fmt"
+.PHONY : include/fmt/CMakeFiles/fmt.dir/codegen
+
+# clean rule for target.
+include/fmt/CMakeFiles/fmt.dir/clean:
+	$(MAKE) $(MAKESILENT) -f include/fmt/CMakeFiles/fmt.dir/build.make include/fmt/CMakeFiles/fmt.dir/clean
+.PHONY : include/fmt/CMakeFiles/fmt.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

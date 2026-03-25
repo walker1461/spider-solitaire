@@ -2,6 +2,8 @@
 #include <vector>
 #include <memory>
 #include <GLFW/glfw3.h>
+
+#include "audio.h"
 #include "../input/card_drag.h"
 
 enum GameState {
@@ -20,6 +22,7 @@ enum Difficulty {
 };
 
 struct Game {
+    Game(AudioManager& audio);
 
     Pile& initializeGame(std::vector<Card>& cards, std::vector<Pile>& cardPiles) const;
     void startNewGame(Difficulty difficulty);
@@ -44,12 +47,15 @@ struct Game {
     bool gameOver = false;
     bool isPaused = false;
     int score = 0;
+    int comboCounter = 0;
 
-    void startDealing();
+    //void startDealing();
     void updateDealing(float deltaTime, Pile& stock);
     void updateRunClearAnimation(float deltaTime);
     void cleanupInactiveCards();
     void refillStock();
+private:
+    AudioManager& audio;
 };
 
 void shuffleDeck(std::vector<Card> &cards);
