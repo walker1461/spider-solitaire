@@ -51,4 +51,5 @@ Future improvements for this project:
 ***
 
 Card textures from [Sylly](https://opengameart.org/users/sylly) under CC0.
+
 SFX from [SignatureSounds](https://signaturesounds.org/store/p/playing-card-sfx) under CC0.
